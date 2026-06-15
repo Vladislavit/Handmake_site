@@ -69,6 +69,8 @@ nav{display:flex;align-items:center;justify-content:space-between;height:74px}
   color:var(--ink);width:100%;min-width:0;outline:none;padding:0}
 .nav-search input::placeholder{color:var(--ink-soft)}
 .nav-search input::-webkit-search-cancel-button{-webkit-appearance:none}
+.burger{display:none;background:none;border:none;cursor:pointer;color:var(--ink);padding:6px;line-height:0}
+.burger svg{width:26px;height:26px}
 
 /* ---------- messages ---------- */
 .messages{list-style:none;margin:16px auto 0;padding:0;max-width:var(--maxw)}
@@ -338,8 +340,15 @@ footer{background:var(--paper-2);border-top:1px dashed var(--line);padding:48px 
 
 /* ---------- responsive ---------- */
 @media (max-width:900px){
-  .nav-links{display:none}
-  .nav-search,.nav-search:focus-within{width:160px}
+  .burger{display:inline-flex}
+  /* меню стає випадним списком під шапкою */
+  .nav-links{display:none;position:absolute;top:74px;left:0;right:0;flex-direction:column;gap:0;
+    background:var(--paper);border-bottom:1px dashed var(--line);padding:8px 24px 16px;
+    box-shadow:0 16px 28px -20px rgba(58,47,42,.5)}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:13px 2px;font-size:17px;border-bottom:1px dashed var(--line)}
+  .nav-links a:last-child{border-bottom:none}
+  .nav-search,.nav-search:focus-within{width:150px}
   .grid,.rgrid{grid-template-columns:repeat(2,1fr)}
   .pd{grid-template-columns:1fr;gap:30px}.gallery{position:static}
   .cart-grid,.co{grid-template-columns:1fr;gap:24px}.summary{position:static}
