@@ -15,11 +15,17 @@ logger = logging.getLogger(__name__)
 
 PRODUCT_FOLDER = 'klubok/products'
 
-# Ланцюг трансформацій (по кроках): прибрати фон -> тінь -> біле тло -> оптимізація
+# Повна обробка: прибрати фон -> тінь -> біле тло -> квадратна обрізка -> оптимізація
 PRODUCT_TRANSFORMATION = [
     {'effect': 'background_removal'},
     {'effect': 'shadow'},
     {'background': 'white'},
+    {'width': 1000, 'height': 1000, 'crop': 'pad', 'background': 'white'},
+    {'quality': 'auto', 'fetch_format': 'auto'},
+]
+
+# «Як є»: без зміни вигляду, лише веб-оптимізація розміру/формату
+OPTIMIZE_ONLY = [
     {'quality': 'auto', 'fetch_format': 'auto'},
 ]
 
@@ -33,8 +39,11 @@ def is_configured():
     return bool(cfg.cloud_name and cfg.api_key and cfg.api_secret)
 
 
-def upload_product_image(file, folder=PRODUCT_FOLDER):
-    """Завантажує файл у Cloudinary з обробкою і повертає secure_url.
+def upload_product_image(file, folder=PRODUCT_FOLDER, process=True):
+    """Завантажує файл у Cloudinary і повертає secure_url.
+
+    process=True  — повна обробка (фон/тінь/біле тло/квадрат);
+    process=False — лишити як є (тільки веб-оптимізація).
 
     Кидає CloudinaryUploadError у разі проблем (немає ключів, помилка API тощо).
     """
@@ -43,11 +52,12 @@ def upload_product_image(file, folder=PRODUCT_FOLDER):
             'Cloudinary не налаштовано: додайте CLOUDINARY_CLOUD_NAME / '
             'CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET у .env'
         )
+    transformation = PRODUCT_TRANSFORMATION if process else OPTIMIZE_ONLY
     try:
         result = cloudinary.uploader.upload(
             file,
             folder=folder,
-            transformation=PRODUCT_TRANSFORMATION,
+            transformation=transformation,
             resource_type='image',
         )
     except cloudinary.exceptions.Error as exc:

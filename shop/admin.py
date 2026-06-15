@@ -31,20 +31,24 @@ class ProductImageForm(forms.ModelForm):
     """Дозволяє завантажити файл — він піде в Cloudinary, а в БД ляже secure_url."""
     upload = forms.ImageField(
         required=False, label='Завантажити / замінити фото',
-        help_text='Оброблятиметься в Cloudinary (видалення фону, тінь, біле тло, оптимізація). '
-                  'Залиште порожнім — поточне фото лишиться без змін.',
+        help_text='Залиште порожнім — поточне фото лишиться без змін.',
+    )
+    process = forms.BooleanField(
+        required=False, initial=True, label='Обробити фото',
+        help_text='Видалити фон, додати тінь і біле тло, обрізати в квадрат. '
+                  'Зніміть галочку, щоб завантажити фото як є (лише веб-оптимізація).',
     )
 
     class Meta:
         model = ProductImage
-        fields = ('upload', 'image_url', 'alt', 'is_main', 'order')
+        fields = ('upload', 'process', 'image_url', 'alt', 'is_main', 'order')
 
     def clean(self):
         cleaned = super().clean()
         upload = cleaned.get('upload')
         if upload:
             try:
-                url = upload_product_image(upload)
+                url = upload_product_image(upload, process=cleaned.get('process', False))
             except CloudinaryUploadError as exc:
                 self.add_error('upload', str(exc))
             else:
@@ -59,7 +63,7 @@ class ProductImageInline(admin.StackedInline):
     model = ProductImage
     form = ProductImageForm
     extra = 1
-    fields = ('preview', 'upload', 'image_url', 'alt', 'is_main', 'order')
+    fields = ('preview', 'upload', 'process', 'image_url', 'alt', 'is_main', 'order')
     readonly_fields = ('preview',)
 
     def preview(self, obj):
@@ -142,7 +146,7 @@ class ProductImageAdmin(admin.ModelAdmin):
     search_fields = ('product__name', 'alt')
     list_select_related = ('product',)
     readonly_fields = ('preview',)
-    fields = ('product', 'preview', 'upload', 'image_url', 'alt', 'is_main', 'order')
+    fields = ('product', 'preview', 'upload', 'process', 'image_url', 'alt', 'is_main', 'order')
 
     def thumb(self, obj):
         if obj.image_url:
