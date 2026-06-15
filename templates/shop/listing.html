@@ -3,6 +3,9 @@
 
 {% block title %}{{ page_title }} — Клубок{% endblock %}
 {% block body_class %}{% if theme_home %}theme-home{% endif %}{% endblock %}
+{% block meta_description %}{{ description|default:page_title }}{% endblock %}
+{% block og_title %}{{ page_title }} — Клубок{% endblock %}
+{% block og_description %}{{ description|default:page_title }}{% endblock %}
 
 {% block content %}
 <div class="wrap">

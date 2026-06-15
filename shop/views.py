@@ -3,9 +3,10 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import F, Q
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django_ratelimit.decorators import ratelimit
 
 PER_PAGE = 12
 
@@ -318,3 +319,28 @@ def np_warehouses(request):
         for w in qs[:500]
     ]
     return JsonResponse({'warehouses': warehouses})
+
+
+# --------------------------- SEO ---------------------------
+
+def sitemap_xml(request):
+    base = request.build_absolute_uri('/').rstrip('/')
+    locs = [base + '/', base + '/catalog/toy/', base + '/catalog/home/']
+    locs += [base + c.get_absolute_url() for c in Category.objects.filter(is_visible=True)]
+    locs += [base + p.get_absolute_url() for p in Product.objects.all()]
+    body = ['<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    body += [f'<url><loc>{loc}</loc></url>' for loc in locs]
+    body.append('</urlset>')
+    return HttpResponse('\n'.join(body), content_type='application/xml')
+
+
+def robots_txt(request):
+    lines = [
+        'User-agent: *',
+        'Disallow: /admin/',
+        'Disallow: /cart/',
+        'Disallow: /checkout/',
+        'Sitemap: ' + request.build_absolute_uri('/sitemap.xml'),
+    ]
+    return HttpResponse('\n'.join(lines), content_type='text/plain')

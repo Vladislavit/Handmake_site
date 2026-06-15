@@ -3,6 +3,11 @@
 
 {% block title %}{{ product.name }} — Клубок{% endblock %}
 {% block body_class %}{% if theme_home %}theme-home{% endif %}{% endblock %}
+{% block meta_description %}{{ product.name }} — {{ product.meta }}{% if not product.is_coming_soon %}, {{ product.price }} ₴{% endif %}. Ручна робота, Клубок.{% endblock %}
+{% block og_type %}product{% endblock %}
+{% block og_title %}{{ product.name }} — Клубок{% endblock %}
+{% block og_description %}{{ product.description|default:product.meta|truncatechars:180 }}{% endblock %}
+{% block og_image %}{% if product.main_image_url %}<meta property="og:image" content="{{ product.main_image_url }}">{% endif %}{% endblock %}
 
 {% block content %}
 <div class="wrap">
