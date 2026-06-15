@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load shop_extras %}
+
+{% block title %}Кошик — Клубок{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="crumb"><a href="{% url 'shop:home' %}">Головна</a> · Кошик</div>
+  <h1 class="title">Ваш кошик</h1>
+
+  {% if cart|length %}
+  <div class="cart-grid">
+    <div class="items">
+      {% for line in cart %}
+      <div class="item">
+        <div class="iph" style="background:var(--accent-bg)">{% product_media line.product %}</div>
+        <div class="imeta">
+          <a class="nm" href="{{ line.product.get_absolute_url }}" style="text-decoration:none;color:inherit">{{ line.product.name }}</a>
+          <div class="op">{{ line.options|default:line.product.meta }}</div>
+          <form method="post" action="{% url 'shop:cart_remove' line.key %}">
+            {% csrf_token %}
+            <button class="rm" type="submit">Видалити</button>
+          </form>
+        </div>
+        <div class="iright">
+          <div class="qty">
+            <form method="post" action="{% url 'shop:cart_update' line.key %}">
+              {% csrf_token %}
+              <input type="hidden" name="qty" value="{{ line.qty|add:'-1' }}">
+              <button type="submit" aria-label="менше">−</button>
+            </form>
+            <span>{{ line.qty }}</span>
+            <form method="post" action="{% url 'shop:cart_update' line.key %}">
+              {% csrf_token %}
+              <input type="hidden" name="qty" value="{{ line.qty|add:'1' }}">
+              <button type="submit" aria-label="більше">+</button>
+            </form>
+          </div>
+          <div class="lp">{{ line.total|uah }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <aside class="summary">
+      <h2>Замовлення</h2>
+      <div class="row"><span>Товари ({{ cart|length }})</span><span>{{ cart.subtotal|uah }}</span></div>
+      <div class="row"><span>Доставка</span><span>{% if cart.shipping %}{{ cart.shipping|uah }}{% else %}безкоштовно{% endif %}</span></div>
+      <div class="promo">
+        <input placeholder="Промокод" aria-label="Промокод">
+        <button type="button">Застосувати</button>
+      </div>
+      <div class="free">
+        {% if cart.free_shipping_left %}Додайте на {{ cart.free_shipping_left|uah }} — і доставка безкоштовна
+        {% else %}✓ Безкоштовна доставка діє{% endif %}
+      </div>
+      <div class="row total"><span>До сплати</span><span class="v">{{ cart.total|uah }}</span></div>
+      <a class="checkout-btn" href="{% url 'shop:checkout' %}">Оформити замовлення</a>
+      <a class="cont" href="{% url 'shop:world' 'toy' %}">← Продовжити покупки</a>
+    </aside>
+  </div>
+  {% else %}
+  <div class="empty">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#F3E4DB" stroke="#C5806C" stroke-width="2"/><path d="M7 13c4 3 9 4 13 1M5 18c5 3 12 4 18-1" stroke="#A4604D" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <h2>Тут поки порожньо</h2>
+    <p>Додайте зайчика або кашпо — і вони з'являться тут.</p>
+    <a href="{% url 'shop:world' 'toy' %}">До магазину</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load shop_extras %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero wrap">
+  <span class="eyebrow">Зв'язано вручну · з вовни і любові</span>
+  <h1>Тепло, яке тримається<br>на <em>одній ниточці</em></h1>
+  <p>М'які іграшки для найменших і плетені кашпо для вашого дому — кожну річ ми в'яжемо власноруч, петля за петлею.</p>
+  <svg class="thread" viewBox="0 0 420 60" fill="none" aria-hidden="true">
+    <path d="M10 30 C 110 -10, 180 70, 210 30 C 240 -10, 310 70, 410 30"
+          stroke="#C5806C" stroke-width="2.4" stroke-dasharray="2 8" stroke-linecap="round"/>
+    <circle cx="10" cy="30" r="5" fill="#C5806C"/>
+    <circle cx="410" cy="30" r="5" fill="#7C8A63"/>
+  </svg>
+</section>
+
+<!-- TWO WORLDS -->
+<section class="worlds wrap" id="worlds">
+  <a class="world toys" href="{% url 'shop:world' 'toy' %}">
+    <span class="tag">Для найменших</span>
+    <h2>М'які друзі</h2>
+    <p>Зайчики, котики, лисички та погримушки — безпечні й приємні на дотик.</p>
+    <div class="pills">
+      {% for c in toy_categories %}<span class="pill">{{ c.name }}</span>{% endfor %}
+    </div>
+    <span class="go">Дивитися іграшки
+      <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 7h17m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <svg class="art" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+      <ellipse cx="60" cy="108" rx="34" ry="6" fill="#C5806C" opacity=".25"/>
+      <path d="M44 40c-6-22 0-30 6-30s12 8 6 30" fill="#fff" stroke="#A4604D" stroke-width="2.4"/>
+      <path d="M76 40c6-22 0-30-6-30s-12 8-6 30" fill="#fff" stroke="#A4604D" stroke-width="2.4"/>
+      <circle cx="60" cy="62" r="30" fill="#fff" stroke="#A4604D" stroke-width="2.4"/>
+      <circle cx="51" cy="58" r="3" fill="#A4604D"/><circle cx="69" cy="58" r="3" fill="#A4604D"/>
+      <path d="M56 68c2 3 6 3 8 0" stroke="#A4604D" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="60" cy="65" r="2.4" fill="#C5806C"/>
+    </svg>
+  </a>
+
+  <a class="world home" href="{% url 'shop:world' 'home' %}">
+    <span class="tag">Для вашого дому</span>
+    <h2>Зелений куточок</h2>
+    <p>Підвісні, плетені та кашпо на ланцюжку — для рослин, які ви любите.</p>
+    <div class="pills">
+      {% for c in home_categories %}<span class="pill">{{ c.name }}</span>{% endfor %}
+    </div>
+    <span class="go">Дивитися кашпо
+      <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 7h17m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <svg class="art" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+      <path d="M60 4v20M40 30c0 24 8 34 20 34s20-10 20-34" stroke="#5C6A45" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M44 30c0 22 7 30 16 30s16-8 16-30" stroke="#5C6A45" stroke-width="2.2" stroke-dasharray="2 6"/>
+      <path d="M48 62h24l-4 30a6 6 0 0 1-6 5h-4a6 6 0 0 1-6-5l-4-30Z" fill="#fff" stroke="#5C6A45" stroke-width="2.4"/>
+      <path d="M60 62c-6-14-2-26 0-30 2 4 6 16 0 30Z" fill="#7C8A63"/>
+      <path d="M60 58c-10-6-16-2-18 0 6 4 14 4 18 0ZM60 58c10-6 16-2 18 0-6 4-14 4-18 0Z" fill="#7C8A63"/>
+    </svg>
+  </a>
+</section>
+
+<!-- STORY -->
+<section class="story wrap" id="story">
+  <span class="eyebrow">Чому Клубок</span>
+  <h3>Кожна петля та кожен вузол — зроблені руками, не машиною</h3>
+  <p class="sub">Натуральна бавовна й вовна, безпечні барвники, маленькі партії. Те, що приємно дарувати й приємно тримати в домі.</p>
+</section>
+
+<hr class="stitch wrap" style="max-width:var(--maxw)">
+
+<!-- CATEGORIES -->
+<section class="cats wrap" id="cats">
+  <div class="cats-head">
+    <h2>Усі категорії</h2>
+    <span class="eyebrow">{{ categories_count }} розділів · оновлюється щотижня</span>
+  </div>
+  <div class="cat-grid">
+    {% for c in toy_categories %}
+    <a class="card t" href="{{ c.get_absolute_url }}">
+      <span class="ic"><svg width="26" height="26" viewBox="0 0 32 32" fill="none"><path d="M11 9C9 3 11 2 13 2s4 2 2 7M21 9c2-6 0-7-2-7s-4 2-2 7" stroke="#A4604D" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="18" r="9" stroke="#A4604D" stroke-width="2"/></svg></span>
+      <span class="nm">{{ c.name }}</span>
+      {% if c.eyebrow %}<span class="ct">{{ c.eyebrow }}</span>{% endif %}
+    </a>
+    {% endfor %}
+    {% for c in home_categories %}
+    <a class="card h" href="{{ c.get_absolute_url }}">
+      <span class="ic"><svg width="26" height="26" viewBox="0 0 32 32" fill="none"><path d="M16 3v6M8 9h16l-2 14a4 4 0 0 1-4 3h-4a4 4 0 0 1-4-3L8 9Z" stroke="#5C6A45" stroke-width="2" stroke-linejoin="round"/></svg></span>
+      <span class="nm">{{ c.name }}</span>
+      {% if c.eyebrow %}<span class="ct">{{ c.eyebrow }}</span>{% endif %}
+    </a>
+    {% endfor %}
+    <a class="card h all" href="{% url 'shop:world' 'home' %}"><span class="nm">Усі товари →</span></a>
+  </div>
+</section>
+{% endblock %}

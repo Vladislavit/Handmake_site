@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Зайчик Тимко — Клубок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EF;--paper-2:#F4ECDD;--ink:#3A2F2A;--ink-soft:#7A6B60;
+    --clay:#C5806C;--clay-bg:#F3E4DB;--clay-deep:#A4604D;
+    --sage:#7C8A63;--sage-bg:#E8ECDC;--sage-deep:#5C6A45;
+    --line:#E2D7C5;--radius:22px;--maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Mulish",system-ui,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.1;margin:0}
+  a{color:inherit}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  header{position:sticky;top:0;z-index:20;background:rgba(251,247,239,.82);backdrop-filter:blur(8px);border-bottom:1px dashed var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{font-family:"Fraunces",serif;font-size:26px;font-weight:600;display:flex;align-items:center;gap:10px;text-decoration:none}
+  .brand svg{width:30px;height:30px}
+  .nav-links{display:flex;gap:30px;font-weight:600;font-size:15px}
+  .nav-links a{text-decoration:none;color:var(--ink-soft);transition:.2s}.nav-links a:hover{color:var(--ink)}
+  .cart{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:2px dashed var(--clay);border-radius:999px;color:var(--clay-deep);font-weight:700;text-decoration:none;transition:.2s}.cart:hover{background:var(--clay-bg)}
+  .crumb{font-size:14px;color:var(--ink-soft);padding:26px 0 22px}
+  .crumb a{text-decoration:none}.crumb a:hover{color:var(--ink)}
+  /* product layout */
+  .pd{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+  .gallery{position:sticky;top:96px}
+  .main-img{aspect-ratio:1/1;background:var(--clay-bg);border-radius:var(--radius);display:grid;place-items:center;border:1px solid var(--line)}
+  .main-img svg{width:62%;height:62%}
+  .thumbs{display:flex;gap:12px;margin-top:14px}
+  .thumb{width:74px;height:74px;border-radius:14px;background:var(--clay-bg);border:2px solid var(--line);display:grid;place-items:center;cursor:pointer;transition:.2s}
+  .thumb svg{width:60%;height:60%}
+  .thumb.on{border-color:var(--clay)}
+  /* info */
+  .info h1{font-size:clamp(34px,4.5vw,48px);margin:6px 0 0}
+  .stars{color:var(--clay);font-size:15px;margin:10px 0 0}
+  .stars span{color:var(--ink-soft);margin-left:6px}
+  .pprice{font-family:"Fraunces",serif;font-size:34px;margin:18px 0 4px}
+  .pprice s{font-size:20px;color:var(--ink-soft);margin-left:10px}
+  .lead{color:var(--ink-soft);margin:14px 0 0}
+  .opt{margin-top:26px}
+  .opt .lbl{font-weight:700;font-size:14px;margin-bottom:10px}
+  .opt .lbl span{color:var(--ink-soft);font-weight:500}
+  .opts{display:flex;gap:10px;flex-wrap:wrap}
+  .ob{font-family:inherit;font-weight:600;font-size:15px;padding:10px 18px;border-radius:12px;border:1.8px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;transition:.2s}
+  .ob:hover{border-color:var(--clay)} .ob.on{background:var(--clay-bg);border-color:var(--clay);color:var(--clay-deep)}
+  .sw{width:40px;height:40px;border-radius:50%;border:2px solid #fff;outline:1.8px solid var(--line);cursor:pointer;transition:.2s}
+  .sw.on{outline:2.4px solid var(--clay);outline-offset:2px}
+  /* add row */
+  .buy{display:flex;gap:12px;margin-top:30px;align-items:stretch}
+  .qty{display:flex;align-items:center;border:1.8px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+  .qty button{width:46px;border:none;background:transparent;font-size:20px;cursor:pointer;color:var(--ink-soft)}
+  .qty input{width:42px;text-align:center;border:none;font-family:inherit;font-size:17px;font-weight:700;background:transparent;color:var(--ink)}
+  .add{flex:1;font-family:inherit;font-weight:700;font-size:16px;border:none;border-radius:14px;background:var(--clay-deep);color:#fff;cursor:pointer;transition:.2s}
+  .add:hover{filter:brightness(1.06)}
+  .add.done{background:var(--sage-deep)}
+  .trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;padding-top:24px;border-top:1px dashed var(--line)}
+  .trust div{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink-soft);font-weight:600}
+  .trust svg{width:20px;height:20px;flex:none}
+  /* sections */
+  .sections{margin:72px 0 0;display:grid;gap:2px}
+  details{border-top:1px dashed var(--line);padding:6px 0}
+  details:last-of-type{border-bottom:1px dashed var(--line)}
+  summary{list-style:none;cursor:pointer;font-family:"Fraunces",serif;font-size:22px;padding:18px 0;display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";color:var(--clay);font-size:26px;font-family:"Mulish"}
+  details[open] summary::after{content:"–"}
+  details .body{padding:0 0 20px;color:var(--ink-soft);max-width:62ch}
+  /* related */
+  .rel{margin:72px 0 80px}
+  .rel h2{font-size:30px;margin-bottom:24px}
+  .rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .rcard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .28s,box-shadow .28s}
+  .rcard:hover{transform:translateY(-5px);box-shadow:0 18px 30px -22px rgba(58,47,42,.4)}
+  .rph{aspect-ratio:1/1;background:var(--clay-bg);display:grid;place-items:center}.rph svg{width:56%}
+  .rinfo{padding:14px}.rinfo .nm{font-family:"Fraunces",serif;font-size:18px}.rinfo .pr{font-weight:700;margin-top:4px}
+  footer{background:var(--paper-2);border-top:1px dashed var(--line);padding:40px 0}
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;color:var(--ink-soft);font-size:14px}
+  .foot a{color:var(--ink-soft);text-decoration:none}.foot a:hover{color:var(--ink)}
+  @media(max-width:900px){.nav-links{display:none}.pd{grid-template-columns:1fr;gap:30px}.gallery{position:static}.rgrid{grid-template-columns:repeat(2,1fr)}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="index.html"><svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#F3E4DB" stroke="#C5806C" stroke-width="2"/><path d="M7 13c4 3 9 4 13 1M5 18c5 3 12 4 18-1M9 8c3 4 6 7 13 8" stroke="#A4604D" stroke-width="1.6" stroke-linecap="round"/></svg>Клубок</a>
+  <div class="nav-links"><a href="category.html">Іграшки</a><a href="index.html#worlds">Кашпо</a><a href="index.html#cats">Категорії</a><a href="index.html#story">Про нас</a></div>
+  <a class="cart" href="cart.html">Кошик · 2</a>
+</nav></div></header>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">Головна</a> · <a href="index.html#worlds">Іграшки</a> · <a href="category.html">Зайчики</a> · Зайчик Тимко</div>
+
+  <div class="pd">
+    <!-- галерея -->
+    <div class="gallery">
+      <div class="main-img" id="mainImg"></div>
+      <div class="thumbs" id="thumbs"></div>
+    </div>
+
+    <!-- інформація -->
+    <div class="info">
+      <span class="eyebrow">Зайчики · ручна робота</span>
+      <h1>Зайчик Тимко</h1>
+      <div class="stars">★★★★★ <span>4.9 · 37 відгуків</span></div>
+      <div class="pprice">540 ₴</div>
+      <p class="lead">М'який в'язаний зайчик із довгими вушками. Зв'язаний гачком із бавовняної пряжі, наповнення — гіпоалергенний холлофайбер. Кожен зайчик трохи унікальний.</p>
+
+      <div class="opt">
+        <div class="lbl">Розмір: <span id="sizeVal">26 см</span></div>
+        <div class="opts" id="sizes">
+          <button class="ob" data-v="18 см">18 см</button>
+          <button class="ob" data-v="22 см">22 см</button>
+          <button class="ob on" data-v="26 см">26 см</button>
+        </div>
+      </div>
+
+      <div class="opt">
+        <div class="lbl">Колір: <span id="colorVal">вершковий</span></div>
+        <div class="opts" id="colors">
+          <button class="sw on" style="background:#EFE7D7" data-v="вершковий" aria-label="вершковий"></button>
+          <button class="sw" style="background:#C9B79A" data-v="бежевий" aria-label="бежевий"></button>
+          <button class="sw" style="background:#B7BCC0" data-v="сірий" aria-label="сірий"></button>
+          <button class="sw" style="background:#D9A6A0" data-v="пудровий" aria-label="пудровий"></button>
+          <button class="sw" style="background:#9FBBA6" data-v="м'ятний" aria-label="м'ятний"></button>
+        </div>
+      </div>
+
+      <div class="buy">
+        <div class="qty">
+          <button type="button" onclick="chg(-1)">−</button>
+          <input id="q" value="1" inputmode="numeric" aria-label="Кількість">
+          <button type="button" onclick="chg(1)">+</button>
+        </div>
+        <button class="add" id="add" type="button" onclick="add()">Додати в кошик · 540 ₴</button>
+      </div>
+
+      <div class="trust">
+        <div><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z" stroke="#A4604D" stroke-width="1.8"/></svg>Зв'язано вручну</div>
+        <div><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z" stroke="#A4604D" stroke-width="1.8"/></svg>Безпечно для немовлят</div>
+        <div><svg viewBox="0 0 24 24" fill="none"><path d="M3 7h13v8H3zM16 10h3l2 2v3h-5z" stroke="#A4604D" stroke-width="1.8"/></svg>Нова Пошта по Україні</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- секції -->
+  <div class="sections">
+    <details open><summary>Опис</summary><div class="body">Тимко — затишний компаньйон для сну й гри. Висота 26 см у положенні сидячи. Вушка тримають форму, лапки м'якенькі. Підходить як перша іграшка для немовляти й як милий подарунок.</div></details>
+    <details><summary>Матеріали й догляд</summary><div class="body">100% бавовняна пряжа, наповнення — холлофайбер. Ручне прання при 30°, без віджиму, сушити в розправленому вигляді. Не використовуйте відбілювач.</div></details>
+    <details><summary>Доставка й оплата</summary><div class="body">Відправка протягом 1–2 днів. Нова Пошта по Україні, оплата при отриманні або онлайн (картка/Apple Pay/Google Pay). Виготовлення на замовлення — до 5 днів.</div></details>
+  </div>
+
+  <!-- схожі -->
+  <section class="rel">
+    <h2>Схожі іграшки</h2>
+    <div class="rgrid" id="rel"></div>
+  </section>
+</div>
+
+<footer><div class="wrap"><div class="foot">
+  <span>© 2026 Клубок · Зроблено в Україні</span>
+  <span><a href="index.html">Головна</a> · <a href="category.html">Зайчики</a> · <a href="cart.html">Кошик</a></span>
+</div></div></footer>
+
+<script>
+  const bunny=(c1,c2)=>`<svg viewBox="0 0 120 120" fill="none">
+    <ellipse cx="60" cy="108" rx="32" ry="5" fill="${c2}" opacity=".22"/>
+    <path d="M44 42c-6-22 0-30 6-30s12 8 6 30" fill="#fff" stroke="${c2}" stroke-width="2.4"/>
+    <path d="M76 42c6-22 0-30-6-30s-12 8-6 30" fill="#fff" stroke="${c2}" stroke-width="2.4"/>
+    <path d="M48 36c-3-14 0-19 3-19" stroke="${c1}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M72 36c3-14 0-19-3-19" stroke="${c1}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="60" cy="64" r="30" fill="#fff" stroke="${c2}" stroke-width="2.4"/>
+    <circle cx="51" cy="60" r="3" fill="${c2}"/><circle cx="69" cy="60" r="3" fill="${c2}"/>
+    <path d="M56 70c2 3 6 3 8 0" stroke="${c2}" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="60" cy="67" r="2.6" fill="${c1}"/></svg>`;
+
+  // галерея: різні відтінки = різні «ракурси»
+  const views=[["#C5806C","#A4604D"],["#C8A87C","#9C7E54"],["#D9A6A0","#B97A72"],["#9AA0A6","#6B7176"]];
+  const mainImg=document.getElementById('mainImg'), thumbs=document.getElementById('thumbs');
+  mainImg.innerHTML=bunny(...views[0]);
+  views.forEach((v,i)=>{const t=document.createElement('button');t.className='thumb'+(i?'':' on');t.innerHTML=bunny(...v);
+    t.onclick=()=>{document.querySelectorAll('.thumb').forEach(x=>x.classList.remove('on'));t.classList.add('on');mainImg.innerHTML=bunny(...v);};thumbs.appendChild(t);});
+
+  // опції
+  document.querySelectorAll('#sizes .ob').forEach(b=>b.onclick=()=>{document.querySelectorAll('#sizes .ob').forEach(o=>o.classList.remove('on'));b.classList.add('on');sizeVal.textContent=b.dataset.v;});
+  document.querySelectorAll('#colors .sw').forEach(b=>b.onclick=()=>{document.querySelectorAll('#colors .sw').forEach(o=>o.classList.remove('on'));b.classList.add('on');colorVal.textContent=b.dataset.v;});
+
+  // кількість + додати
+  const q=document.getElementById('q');
+  function chg(d){let v=Math.max(1,(parseInt(q.value)||1)+d);q.value=v;}
+  function add(){const b=document.getElementById('add');b.classList.add('done');b.textContent='Додано в кошик ✓';setTimeout(()=>{b.classList.remove('done');b.textContent='Додати в кошик · 540 ₴';},1800);}
+
+  // схожі
+  const rel=[["Зайчик Пух","420 ₴","#9AA0A6","#6B7176"],["Зайчик Лапка","560 ₴","#D9A6A0","#B97A72"],["Зайчик Сонько","490 ₴","#C8A87C","#9C7E54"],["Зайчик М'ятка","430 ₴","#8FB39A","#5E8268"]];
+  rel.forEach(r=>{const a=document.createElement('a');a.href="product.html";a.className="rcard";
+    a.innerHTML=`<div class="rph">${bunny(r[2],r[3])}</div><div class="rinfo"><div class="nm">${r[0]}</div><div class="pr">${r[1]}</div></div>`;document.getElementById('rel').appendChild(a);});
+</script>
+</body>
+</html>

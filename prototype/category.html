@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Зайчики — Клубок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EF;--paper-2:#F4ECDD;--ink:#3A2F2A;--ink-soft:#7A6B60;
+    --clay:#C5806C;--clay-bg:#F3E4DB;--clay-deep:#A4604D;
+    --sage:#7C8A63;--sage-bg:#E8ECDC;--sage-deep:#5C6A45;
+    --line:#E2D7C5;--radius:22px;--maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Mulish",system-ui,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.1;margin:0}
+  a{color:inherit}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  /* nav */
+  header{position:sticky;top:0;z-index:20;background:rgba(251,247,239,.82);backdrop-filter:blur(8px);border-bottom:1px dashed var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{font-family:"Fraunces",serif;font-size:26px;font-weight:600;display:flex;align-items:center;gap:10px;text-decoration:none}
+  .brand svg{width:30px;height:30px}
+  .nav-links{display:flex;gap:30px;font-weight:600;font-size:15px}
+  .nav-links a{text-decoration:none;color:var(--ink-soft);transition:.2s}.nav-links a:hover{color:var(--ink)}
+  .cart{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:2px dashed var(--clay);border-radius:999px;color:var(--clay-deep);font-weight:700;text-decoration:none;transition:.2s}.cart:hover{background:var(--clay-bg)}
+  /* breadcrumb + head */
+  .crumb{font-size:14px;color:var(--ink-soft);padding:26px 0 0}
+  .crumb a{text-decoration:none}.crumb a:hover{color:var(--ink)}
+  .cat-head{padding:14px 0 26px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  .cat-head h1{font-size:clamp(34px,5vw,52px)}
+  .cat-head p{margin:10px 0 0;color:var(--ink-soft);max-width:46ch}
+  .count{font-size:14px;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+  /* toolbar */
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:24px;border-bottom:1px dashed var(--line)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font-size:14px;font-weight:600;padding:7px 15px;border-radius:999px;border:1.6px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;transition:.2s}
+  .chip:hover{border-color:var(--clay)}
+  .chip.on{background:var(--clay-bg);border-color:var(--clay);color:var(--clay-deep)}
+  .sort{font-size:14px;font-weight:600;color:var(--ink-soft);border:1.6px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px}
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:30px 0 18px}
+  .prod{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;transition:transform .28s,box-shadow .28s,border-color .28s;position:relative}
+  .prod:hover{transform:translateY(-6px);box-shadow:0 20px 36px -24px rgba(58,47,42,.45);border-color:transparent}
+  .ph{aspect-ratio:1/1;background:var(--clay-bg);display:grid;place-items:center;position:relative}
+  .ph svg{width:58%;height:58%}
+  .badge{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#fff;color:var(--clay-deep);padding:4px 10px;border-radius:999px}
+  .quick{position:absolute;bottom:10px;left:10px;right:10px;background:var(--clay-deep);color:#fff;border:none;border-radius:12px;padding:11px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;opacity:0;transform:translateY(8px);transition:.25s}
+  .prod:hover .quick{opacity:1;transform:none}
+  .pinfo{padding:16px 16px 18px}
+  .pname{font-family:"Fraunces",serif;font-size:20px}
+  .pmeta{font-size:13px;color:var(--ink-soft);margin:2px 0 10px}
+  .price{font-weight:700;font-size:17px}
+  .price s{color:var(--ink-soft);font-weight:500;margin-left:8px;font-size:14px}
+  /* pager */
+  .pager{display:flex;justify-content:center;padding:30px 0 70px}
+  .more{font-family:inherit;font-weight:700;font-size:15px;padding:13px 30px;border-radius:999px;border:2px dashed var(--clay);background:transparent;color:var(--clay-deep);cursor:pointer;transition:.2s}.more:hover{background:var(--clay-bg)}
+  /* footer */
+  footer{background:var(--paper-2);border-top:1px dashed var(--line);padding:40px 0}
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;color:var(--ink-soft);font-size:14px}
+  .foot a{color:var(--ink-soft);text-decoration:none}.foot a:hover{color:var(--ink)}
+  @media(max-width:900px){.nav-links{display:none}.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:480px){.grid{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#F3E4DB" stroke="#C5806C" stroke-width="2"/><path d="M7 13c4 3 9 4 13 1M5 18c5 3 12 4 18-1M9 8c3 4 6 7 13 8" stroke="#A4604D" stroke-width="1.6" stroke-linecap="round"/></svg>Клубок</a>
+  <div class="nav-links"><a href="category.html">Іграшки</a><a href="index.html#worlds">Кашпо</a><a href="index.html#cats">Категорії</a><a href="index.html#story">Про нас</a></div>
+  <a class="cart" href="cart.html">Кошик · 2</a>
+</nav></div></header>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">Головна</a> · <a href="index.html#worlds">Іграшки</a> · Зайчики</div>
+  <div class="cat-head">
+    <div>
+      <span class="eyebrow">Для найменших</span>
+      <h1>Зайчики</h1>
+      <p>М'які в'язані зайчики з натуральної бавовни. Безпечні для немовлят, приємні на дотик, кожен — трохи свій.</p>
+    </div>
+    <span class="count">8 товарів</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="filters">
+      <button class="chip on">Усі</button>
+      <button class="chip">Маленькі</button>
+      <button class="chip">Великі</button>
+      <button class="chip">Новинки</button>
+      <button class="chip">В наявності</button>
+    </div>
+    <select class="sort" aria-label="Сортувати">
+      <option>Спочатку популярні</option>
+      <option>Спочатку дешевші</option>
+      <option>Спочатку дорожчі</option>
+      <option>Новинки</option>
+    </select>
+  </div>
+
+  <div class="grid" id="grid"><!-- картки додаються скриптом --></div>
+
+  <div class="pager"><button class="more">Показати ще</button></div>
+</div>
+
+<footer><div class="wrap"><div class="foot">
+  <span>© 2026 Клубок · Зроблено в Україні</span>
+  <span><a href="index.html">Головна</a> · <a href="product.html">Приклад товару</a> · <a href="cart.html">Кошик</a></span>
+</div></div></footer>
+
+<script>
+  // SVG зайчика з варіантами кольору вушок
+  const bunny = (c1,c2)=>`<svg viewBox="0 0 120 120" fill="none">
+    <ellipse cx="60" cy="108" rx="32" ry="5" fill="${c2}" opacity=".22"/>
+    <path d="M44 42c-6-22 0-30 6-30s12 8 6 30" fill="#fff" stroke="${c2}" stroke-width="2.4"/>
+    <path d="M76 42c6-22 0-30-6-30s-12 8-6 30" fill="#fff" stroke="${c2}" stroke-width="2.4"/>
+    <path d="M48 36c-3-14 0-19 3-19" stroke="${c1}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M72 36c3-14 0-19-3-19" stroke="${c1}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="60" cy="64" r="30" fill="#fff" stroke="${c2}" stroke-width="2.4"/>
+    <circle cx="51" cy="60" r="3" fill="${c2}"/><circle cx="69" cy="60" r="3" fill="${c2}"/>
+    <path d="M56 70c2 3 6 3 8 0" stroke="${c2}" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="60" cy="67" r="2.6" fill="${c1}"/></svg>`;
+
+  const products = [
+    {n:"Зайчик Тимко", m:"26 см · вершковий", p:540, badge:"Хіт", c1:"#C5806C",c2:"#A4604D"},
+    {n:"Зайчик Пух", m:"18 см · сірий", p:420, c1:"#9AA0A6",c2:"#6B7176"},
+    {n:"Зайчик Лапка", m:"26 см · пудровий", p:560, badge:"Новинка", c1:"#D9A6A0",c2:"#B97A72"},
+    {n:"Зайчик Сонько", m:"22 см · бежевий", p:490, c1:"#C8A87C",c2:"#9C7E54"},
+    {n:"Зайчик М'ятка", m:"18 см · м'ятний", p:430, c1:"#8FB39A",c2:"#5E8268"},
+    {n:"Зайчик Бубон", m:"30 см · карамель", p:680, badge:"Великий", c1:"#C99A6A",c2:"#9C7240"},
+    {n:"Зайчик Сніжок", m:"22 см · білий", p:0, c1:"#D8D2C6",c2:"#9C968A", soon:true},
+    {n:"Зайчик Морквик", m:"26 см · рудий", p:580, oldp:650, c1:"#C5806C",c2:"#A4604D"},
+  ];
+
+  const grid = document.getElementById('grid');
+  products.forEach(x=>{
+    const a=document.createElement('a'); a.href="product.html"; a.className="prod";
+    a.innerHTML = `
+      <div class="ph">
+        ${x.badge?`<span class="badge">${x.badge}</span>`:''}
+        ${bunny(x.c1,x.c2)}
+        <button class="quick" type="button" onclick="event.preventDefault();this.textContent='Додано ✓'">${x.soon?'Незабаром':'Швидко в кошик'}</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">${x.n}</div>
+        <div class="pmeta">${x.m}</div>
+        <div class="price">${x.soon?'<span style="color:var(--ink-soft)">очікується</span>':x.p+' ₴'}${x.oldp?` <s>${x.oldp} ₴</s>`:''}</div>
+      </div>`;
+    grid.appendChild(a);
+  });
+
+  // прості фільтр-чіпи (демо)
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+    document.querySelectorAll('.chip').forEach(o=>o.classList.remove('on')); c.classList.add('on');
+  });
+</script>
+</body>
+</html>

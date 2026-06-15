@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load shop_extras static %}
+
+{% block title %}Оформлення — Клубок{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin="">
+{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="crumb"><a href="{% url 'shop:home' %}">Головна</a> · <a href="{% url 'shop:cart' %}">Кошик</a> · Оформлення</div>
+  <h1 class="title">Оформлення замовлення</h1>
+
+  <form method="post" action="{% url 'shop:checkout' %}">
+    {% csrf_token %}
+    <div class="co">
+      <div class="form-col">
+        <!-- 1. контакти -->
+        <div class="block">
+          <h2><span class="num">1</span> Контактні дані</h2>
+          <div class="two">
+            <div class="field">
+              <label>Ім'я та прізвище</label>{{ form.full_name }}
+              {% if form.full_name.errors %}<div class="err-text">{{ form.full_name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="field">
+              <label>Телефон</label>{{ form.phone }}
+              {% if form.phone.errors %}<div class="err-text">{{ form.phone.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+          <div class="field">
+            <label>Email <span style="color:var(--ink-soft);font-weight:500">(для підтвердження)</span></label>{{ form.email }}
+            {% if form.email.errors %}<div class="err-text">{{ form.email.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+
+        <!-- 2. доставка -->
+        <div class="block">
+          <h2><span class="num">2</span> Доставка</h2>
+          <div class="opts-col" id="delivery">
+            {% for value, label in form.fields.delivery.choices %}
+            <label class="ro{% if value == form.delivery.value|default:'np-branch' %} on{% endif %}" data-d="{{ value }}">
+              <input type="radio" name="delivery" value="{{ value }}" {% if value == form.delivery.value|default:'np-branch' %}checked{% endif %}>
+              <span class="dot"></span>
+              <span><span class="t">{{ label }}</span></span>
+              <span class="pr">{% if value == 'np-branch' %}70 ₴{% elif value == 'np-courier' %}110 ₴{% else %}безкоштовно{% endif %}</span>
+            </label>
+            {% endfor %}
+          </div>
+          <div class="sub-fields" id="np-fields">
+            <!-- Місто (автодоповнення з Нової Пошти) -->
+            <div class="field np-autocomplete">
+              <label>Місто</label>
+              <input id="np-city-input" autocomplete="off" placeholder="Почніть вводити місто…"
+                     value="{{ form.city.value|default:'' }}">
+              <input type="hidden" name="city" id="f-city" value="{{ form.city.value|default:'' }}">
+              <input type="hidden" name="np_city_ref" id="f-city-ref" value="{{ form.np_city_ref.value|default:'' }}">
+              <div id="np-city-suggest" class="np-suggest hidden"></div>
+              {% if form.city.errors %}<div class="err-text">{{ form.city.errors.0 }}</div>{% endif %}
+            </div>
+
+            <!-- Відділення / поштомат: список + карта -->
+            <div id="np-branch-block">
+              <div class="np-type-toggle">
+                <button type="button" class="chip on" data-nptype="branch">Відділення</button>
+                <button type="button" class="chip" data-nptype="poshtomat">Поштомати</button>
+              </div>
+              <div class="np-cols">
+                <div id="np-list" class="np-list"><p class="np-hint">Оберіть місто, щоб побачити відділення.</p></div>
+                <div id="np-map"></div>
+              </div>
+              <input type="hidden" name="branch" id="f-branch" value="{{ form.branch.value|default:'' }}">
+              <input type="hidden" name="np_warehouse_ref" id="f-wh-ref" value="{{ form.np_warehouse_ref.value|default:'' }}">
+              {% if form.branch.value %}<div id="np-selected" class="np-selected">Обрано: {{ form.branch.value }}</div>{% else %}<div id="np-selected" class="np-selected hidden"></div>{% endif %}
+              {% if form.branch.errors %}<div class="err-text">{{ form.branch.errors.0 }}</div>{% endif %}
+            </div>
+
+            <!-- Кур'єрська адреса -->
+            <div class="field hidden" id="addr-field">
+              <label>Адреса доставки</label>
+              <input name="address" id="f-address" placeholder="Вулиця, будинок, квартира"
+                     value="{{ form.address.value|default:'' }}">
+              {% if form.address.errors %}<div class="err-text">{{ form.address.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. оплата -->
+        <div class="block">
+          <h2><span class="num">3</span> Оплата</h2>
+          <div class="opts-col" id="payment">
+            {% for value, label in form.fields.payment.choices %}
+            <label class="ro{% if value == form.payment.value|default:'online' %} on{% endif %}" data-p="{{ value }}">
+              <input type="radio" name="payment" value="{{ value }}" {% if value == form.payment.value|default:'online' %}checked{% endif %}>
+              <span class="dot"></span>
+              <span><span class="t">{{ label }}</span></span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 4. коментар -->
+        <div class="block">
+          <h2><span class="num">4</span> Коментар <span style="font-family:Mulish;font-size:14px;color:var(--ink-soft);font-weight:500">(не обов'язково)</span></h2>
+          <div class="field">{{ form.comment }}</div>
+        </div>
+      </div>
+
+      <!-- summary -->
+      <aside class="summary">
+        <h2>Ваше замовлення</h2>
+        {% for line in cart %}
+        <div class="li">
+          <div class="th" style="background:var(--accent-bg)">{% product_media line.product %}</div>
+          <div>
+            <div class="nm">{{ line.product.name }}</div>
+            <div class="op">{{ line.options|default:line.product.meta }} · {{ line.qty }} шт</div>
+          </div>
+          <div class="pr">{{ line.total|uah }}</div>
+        </div>
+        {% endfor %}
+        <div class="row"><span>Сума товарів</span><span>{{ cart.subtotal|uah }}</span></div>
+        <div class="row"><span>Доставка</span><span>{% if cart.shipping %}{{ cart.shipping|uah }}{% else %}безкоштовно{% endif %}</span></div>
+        <div class="row total"><span>До сплати</span><span class="v">{{ cart.total|uah }}</span></div>
+        <button class="confirm" type="submit">Підтвердити замовлення</button>
+        <div class="note">Натискаючи, ви погоджуєтесь з умовами магазину. Платіж проходить через захищену сторінку банку.</div>
+      </aside>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
+<script src="{% static 'js/novaposhta.js' %}"></script>
+{% endblock %}

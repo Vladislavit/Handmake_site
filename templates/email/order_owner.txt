@@ -1,0 +1,19 @@
+Нове замовлення №{{ order.id|stringformat:"05d" }}
+
+Клієнт: {{ order.full_name }}
+Телефон: {{ order.phone }}
+Email: {{ order.email|default:"—" }}
+
+Доставка: {{ order.get_delivery_display }}
+{% if order.delivery == 'pickup' %}Самовивіз{% elif order.delivery == 'np-courier' %}{{ order.city }}, {{ order.address }}{% else %}{{ order.city }}, {{ order.branch }}{% endif %}
+Оплата: {{ order.get_payment_display }}
+
+Товари:
+{% for it in items %}— {{ it.name }}{% if it.options %} ({{ it.options }}){% endif %} × {{ it.qty }} — {{ it.cost }} ₴
+{% endfor %}
+Доставка: {% if order.shipping %}{{ order.shipping }} ₴{% else %}безкоштовно{% endif %}
+Разом: {{ order.total }} ₴
+{% if order.comment %}
+Коментар: {{ order.comment }}
+{% endif %}
+Переглянути в адмінці: /admin/shop/order/{{ order.id }}/change/

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кошик — Клубок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EF;--paper-2:#F4ECDD;--ink:#3A2F2A;--ink-soft:#7A6B60;
+    --clay:#C5806C;--clay-bg:#F3E4DB;--clay-deep:#A4604D;
+    --sage:#7C8A63;--sage-bg:#E8ECDC;--sage-deep:#5C6A45;
+    --line:#E2D7C5;--radius:22px;--maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Mulish",system-ui,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.1;margin:0}
+  a{color:inherit}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  header{position:sticky;top:0;z-index:20;background:rgba(251,247,239,.82);backdrop-filter:blur(8px);border-bottom:1px dashed var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{font-family:"Fraunces",serif;font-size:26px;font-weight:600;display:flex;align-items:center;gap:10px;text-decoration:none}
+  .brand svg{width:30px;height:30px}
+  .nav-links{display:flex;gap:30px;font-weight:600;font-size:15px}
+  .nav-links a{text-decoration:none;color:var(--ink-soft);transition:.2s}.nav-links a:hover{color:var(--ink)}
+  .cart{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:2px dashed var(--clay);border-radius:999px;color:var(--clay-deep);font-weight:700;text-decoration:none}
+  .crumb{font-size:14px;color:var(--ink-soft);padding:26px 0 6px}
+  .crumb a{text-decoration:none}.crumb a:hover{color:var(--ink)}
+  h1.title{font-size:clamp(34px,5vw,52px);padding:6px 0 28px}
+  /* layout */
+  .cart-grid{display:grid;grid-template-columns:1fr 360px;gap:34px;align-items:start;padding-bottom:80px}
+  /* items */
+  .items{display:flex;flex-direction:column}
+  .item{display:grid;grid-template-columns:96px 1fr auto;gap:18px;padding:22px 0;border-bottom:1px dashed var(--line);align-items:center}
+  .item:first-child{border-top:1px dashed var(--line)}
+  .iph{width:96px;height:96px;border-radius:16px;display:grid;place-items:center}
+  .iph svg{width:64%;height:64%}
+  .imeta .nm{font-family:"Fraunces",serif;font-size:21px}
+  .imeta .op{font-size:14px;color:var(--ink-soft);margin-top:2px}
+  .imeta .rm{margin-top:8px;background:none;border:none;color:var(--ink-soft);font-family:inherit;font-size:13px;cursor:pointer;padding:0;text-decoration:underline dotted}
+  .imeta .rm:hover{color:var(--clay-deep)}
+  .iright{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+  .qty{display:inline-flex;align-items:center;border:1.6px solid var(--line);border-radius:12px;background:#fff}
+  .qty button{width:36px;height:36px;border:none;background:transparent;font-size:18px;cursor:pointer;color:var(--ink-soft)}
+  .qty span{width:34px;text-align:center;font-weight:700}
+  .lp{font-weight:700;white-space:nowrap}
+  /* summary */
+  .summary{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;position:sticky;top:96px}
+  .summary h2{font-size:24px;margin-bottom:18px}
+  .row{display:flex;justify-content:space-between;padding:9px 0;color:var(--ink-soft);font-size:15px}
+  .row.total{border-top:1px dashed var(--line);margin-top:8px;padding-top:16px;color:var(--ink);font-size:20px;font-weight:700}
+  .row.total .v{font-family:"Fraunces",serif;font-size:26px}
+  .promo{display:flex;gap:8px;margin:18px 0 6px}
+  .promo input{flex:1;border:1.6px solid var(--line);border-radius:12px;padding:11px 14px;font-family:inherit;font-size:14px;background:var(--paper)}
+  .promo button{border:1.6px solid var(--line);background:#fff;border-radius:12px;padding:0 16px;font-family:inherit;font-weight:700;cursor:pointer;color:var(--ink-soft)}
+  .promo button:hover{border-color:var(--clay);color:var(--clay-deep)}
+  .free{font-size:13px;color:var(--sage-deep);font-weight:600;background:var(--sage-bg);border-radius:12px;padding:10px 14px;margin:6px 0 0}
+  .checkout{width:100%;margin-top:18px;border:none;border-radius:14px;background:var(--clay-deep);color:#fff;font-family:inherit;font-weight:700;font-size:16px;padding:15px;cursor:pointer;transition:.2s}
+  .checkout:hover{filter:brightness(1.06)}
+  .cont{display:inline-block;margin-top:14px;font-size:14px;color:var(--ink-soft);text-decoration:none}.cont:hover{color:var(--ink)}
+  /* empty */
+  .empty{text-align:center;padding:70px 0 90px;display:none}
+  .empty svg{width:90px;height:90px;opacity:.8}
+  .empty h2{font-size:30px;margin:18px 0 8px}
+  .empty p{color:var(--ink-soft);margin:0 0 22px}
+  .empty a{display:inline-block;background:var(--clay-deep);color:#fff;text-decoration:none;font-weight:700;padding:13px 28px;border-radius:999px}
+  footer{background:var(--paper-2);border-top:1px dashed var(--line);padding:40px 0}
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;color:var(--ink-soft);font-size:14px}
+  .foot a{color:var(--ink-soft);text-decoration:none}.foot a:hover{color:var(--ink)}
+  @media(max-width:900px){.nav-links{display:none}.cart-grid{grid-template-columns:1fr;gap:24px}.summary{position:static}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="index.html"><svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#F3E4DB" stroke="#C5806C" stroke-width="2"/><path d="M7 13c4 3 9 4 13 1M5 18c5 3 12 4 18-1M9 8c3 4 6 7 13 8" stroke="#A4604D" stroke-width="1.6" stroke-linecap="round"/></svg>Клубок</a>
+  <div class="nav-links"><a href="category.html">Іграшки</a><a href="index.html#worlds">Кашпо</a><a href="index.html#cats">Категорії</a><a href="index.html#story">Про нас</a></div>
+  <a class="cart" href="cart.html" id="navCart">Кошик · 2</a>
+</nav></div></header>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">Головна</a> · Кошик</div>
+  <h1 class="title">Ваш кошик</h1>
+
+  <div class="cart-grid" id="grid">
+    <div class="items" id="items"></div>
+
+    <aside class="summary">
+      <h2>Замовлення</h2>
+      <div class="row"><span>Товари (<span id="cnt">0</span>)</span><span id="sub">0 ₴</span></div>
+      <div class="row"><span>Доставка</span><span id="ship">—</span></div>
+      <div class="promo">
+        <input placeholder="Промокод" aria-label="Промокод">
+        <button type="button" onclick="this.textContent='✓'">Застосувати</button>
+      </div>
+      <div class="free" id="free"></div>
+      <div class="row total"><span>До сплати</span><span class="v" id="tot">0 ₴</span></div>
+      <button class="checkout" type="button" onclick="alert('Далі — сторінка оформлення: дані, доставка Нова Пошта, оплата WayForPay/LiqPay')">Оформити замовлення</button>
+      <a class="cont" href="category.html">← Продовжити покупки</a>
+    </aside>
+  </div>
+
+  <!-- порожній стан -->
+  <div class="empty" id="empty">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#F3E4DB" stroke="#C5806C" stroke-width="2"/><path d="M7 13c4 3 9 4 13 1M5 18c5 3 12 4 18-1" stroke="#A4604D" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <h2>Тут поки порожньо</h2>
+    <p>Додайте зайчика або кашпо — і вони з'являться тут.</p>
+    <a href="category.html">До магазину</a>
+  </div>
+</div>
+
+<footer><div class="wrap"><div class="foot">
+  <span>© 2026 Клубок · Зроблено в Україні</span>
+  <span><a href="index.html">Головна</a> · <a href="category.html">Зайчики</a> · <a href="product.html">Приклад товару</a></span>
+</div></div></footer>
+
+<script>
+  const bunny=(c1,c2)=>`<svg viewBox="0 0 120 120" fill="none"><ellipse cx="60" cy="108" rx="30" ry="5" fill="${c2}" opacity=".22"/><path d="M44 42c-6-22 0-30 6-30s12 8 6 30" fill="#fff" stroke="${c2}" stroke-width="2.4"/><path d="M76 42c6-22 0-30-6-30s-12 8-6 30" fill="#fff" stroke="${c2}" stroke-width="2.4"/><circle cx="60" cy="64" r="30" fill="#fff" stroke="${c2}" stroke-width="2.4"/><circle cx="51" cy="60" r="3" fill="${c2}"/><circle cx="69" cy="60" r="3" fill="${c2}"/><path d="M56 70c2 3 6 3 8 0" stroke="${c2}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  const planter=(c)=>`<svg viewBox="0 0 120 120" fill="none"><path d="M60 6v18M40 30c0 24 8 34 20 34s20-10 20-34" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/><path d="M48 62h24l-4 30a6 6 0 0 1-6 5h-4a6 6 0 0 1-6-5l-4-30Z" fill="#fff" stroke="${c}" stroke-width="2.4"/><path d="M60 62c-6-14-2-26 0-30 2 4 6 16 0 30Z" fill="#7C8A63"/></svg>`;
+
+  // стан кошика (у Django стане сесією/БД)
+  let cart=[
+    {id:1,name:"Зайчик Тимко",opt:"26 см · вершковий",price:540,qty:1,type:"toy",c1:"#C5806C",c2:"#A4604D",bg:"var(--clay-bg)"},
+    {id:2,name:"Кашпо «Вузлик»",opt:"підвісне · макраме",price:380,qty:1,type:"pot",c:"#5C6A45",bg:"var(--sage-bg)"},
+  ];
+  const FREE_FROM=800, SHIP=70;
+  const itemsEl=document.getElementById('items'), gridEl=document.getElementById('grid'), emptyEl=document.getElementById('empty');
+
+  function render(){
+    if(!cart.length){gridEl.style.display='none';emptyEl.style.display='block';document.getElementById('navCart').textContent='Кошик · 0';return;}
+    gridEl.style.display='grid';emptyEl.style.display='none';
+    itemsEl.innerHTML='';
+    cart.forEach(it=>{
+      const art = it.type==='toy'?bunny(it.c1,it.c2):planter(it.c);
+      const el=document.createElement('div');el.className='item';
+      el.innerHTML=`
+        <div class="iph" style="background:${it.bg}">${art}</div>
+        <div class="imeta">
+          <div class="nm">${it.name}</div>
+          <div class="op">${it.opt}</div>
+          <button class="rm" onclick="remove(${it.id})">Видалити</button>
+        </div>
+        <div class="iright">
+          <div class="qty">
+            <button onclick="step(${it.id},-1)" aria-label="менше">−</button>
+            <span>${it.qty}</span>
+            <button onclick="step(${it.id},1)" aria-label="більше">+</button>
+          </div>
+          <div class="lp">${it.price*it.qty} ₴</div>
+        </div>`;
+      itemsEl.appendChild(el);
+    });
+    const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+    const cnt=cart.reduce((s,i)=>s+i.qty,0);
+    const ship=sub>=FREE_FROM?0:SHIP;
+    document.getElementById('cnt').textContent=cnt;
+    document.getElementById('sub').textContent=sub+' ₴';
+    document.getElementById('ship').textContent=ship?ship+' ₴':'безкоштовно';
+    document.getElementById('tot').textContent=(sub+ship)+' ₴';
+    document.getElementById('navCart').textContent='Кошик · '+cnt;
+    const free=document.getElementById('free');
+    if(sub>=FREE_FROM){free.textContent='✓ Безкоштовна доставка діє';}
+    else{free.textContent=`Додайте на ${FREE_FROM-sub} ₴ — і доставка безкоштовна`;}
+  }
+  function step(id,d){const it=cart.find(x=>x.id===id);it.qty=Math.max(1,it.qty+d);render();}
+  function remove(id){cart=cart.filter(x=>x.id!==id);render();}
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load shop_extras %}
+
+{% block title %}{{ page_title }} — Клубок{% endblock %}
+{% block body_class %}{% if theme_home %}theme-home{% endif %}{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="crumb">
+    {% for label, url in crumbs %}{% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}{{ label }}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}
+  </div>
+
+  <div class="cat-head">
+    <div>
+      {% if eyebrow %}<span class="eyebrow">{{ eyebrow }}</span>{% endif %}
+      <h1>{{ page_title }}</h1>
+      {% if description %}<p>{{ description }}</p>{% endif %}
+    </div>
+    <span class="count">{{ count }} товарів</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="filters">
+      {% for f in filters %}<button class="chip{% if forloop.first %} on{% endif %}" type="button">{{ f }}</button>{% endfor %}
+    </div>
+    <select class="sort" data-autosubmit aria-label="Сортувати">
+      <option value="popular" {% if sort == 'popular' %}selected{% endif %}>Спочатку популярні</option>
+      <option value="cheap" {% if sort == 'cheap' %}selected{% endif %}>Спочатку дешевші</option>
+      <option value="expensive" {% if sort == 'expensive' %}selected{% endif %}>Спочатку дорожчі</option>
+      <option value="new" {% if sort == 'new' %}selected{% endif %}>Новинки</option>
+    </select>
+  </div>
+
+  <div class="grid">
+    {% for p in products %}
+    <div class="prod">
+      <div class="ph">
+        {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
+        <a href="{{ p.get_absolute_url }}" style="display:contents">{% product_media p %}</a>
+        {% if p.is_coming_soon %}
+          <button class="quick" type="button" disabled>Незабаром</button>
+        {% else %}
+          <form class="quick-form" method="post" action="{% url 'shop:cart_add' p.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="cart">
+            <button class="quick" type="submit">Швидко в кошик</button>
+          </form>
+        {% endif %}
+      </div>
+      <a class="pinfo" href="{{ p.get_absolute_url }}" style="text-decoration:none;color:inherit;display:block">
+        <div class="pname">{{ p.name }}</div>
+        <div class="pmeta">{{ p.meta }}</div>
+        <div class="price">
+          {% if p.is_coming_soon %}<span class="soon">очікується</span>
+          {% else %}{{ p.price|uah }}{% if p.has_discount %} <s>{{ p.old_price|uah }}</s>{% endif %}{% endif %}
+        </div>
+      </a>
+    </div>
+    {% empty %}
+    <p class="empty-grid">Тут поки немає товарів. Зазирніть трохи згодом 🧶</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ── Віртуальне середовище ──
+venv/
+.venv/
+env/
+ENV/
+
+# ── Django ──
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/            # завантажені фото товарів
+/staticfiles/      # результат collectstatic
+*.mo               # скомпільовані переклади
+
+# ── Секрети та локальні дампи (НЕ комітимо!) ──
+.env
+*.env
+data_dump.json
+auth_dump.json
+
+# ── Тести / лінтери / кеші ──
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ── IDE / ОС / інструменти ──
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.claude/

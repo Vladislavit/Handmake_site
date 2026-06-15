@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load shop_extras %}
+
+{% block title %}{{ product.name }} — Клубок{% endblock %}
+{% block body_class %}{% if theme_home %}theme-home{% endif %}{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="crumb">
+    {% for label, url in crumbs %}{% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}{{ label }}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}
+  </div>
+
+  <div class="pd">
+    <!-- галерея -->
+    <div class="gallery">
+      <div class="main-img" id="mainImg">{% product_media product %}</div>
+      {% if product.images.all %}
+      <div class="thumbs">
+        {% for img in product.images.all %}
+        <button class="thumb{% if forloop.first %} on{% endif %}" type="button"
+                data-media="<img class='media-photo' src='{{ img.image.url }}' alt=''>">
+          <img class="media-photo" src="{{ img.image.url }}" alt="{{ img.alt }}">
+        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- інформація -->
+    <div class="info">
+      <span class="eyebrow">{{ product.category.name }} · ручна робота</span>
+      <h1>{{ product.name }}</h1>
+      {% if product.reviews_count %}
+      <div class="stars">★★★★★ <span>{{ product.rating }} · {{ product.reviews_count }} відгуків</span></div>
+      {% endif %}
+      <div class="pprice">
+        {% if product.is_coming_soon %}<span style="color:var(--ink-soft)">очікується</span>
+        {% else %}{{ product.price|uah }}{% if product.has_discount %}<s>{{ product.old_price|uah }}</s>{% endif %}{% endif %}
+      </div>
+      {% if product.description %}<p class="lead">{{ product.description }}</p>{% endif %}
+
+      <form id="product-form" method="post" action="{% url 'shop:cart_add' product.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="size" id="size-field" value="{{ product.size_list.0 }}">
+        <input type="hidden" name="color" id="color-field" value="{{ product.color_list.0.name }}">
+
+        {% if product.size_list %}
+        <div class="opt">
+          <div class="lbl">Розмір: <span id="sizeVal">{{ product.size_list.0 }}</span></div>
+          <div class="opts" id="sizes">
+            {% for s in product.size_list %}
+            <button class="ob{% if forloop.first %} on{% endif %}" type="button" data-v="{{ s }}">{{ s }}</button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if product.color_list %}
+        <div class="opt">
+          <div class="lbl">Колір: <span id="colorVal">{{ product.color_list.0.name }}</span></div>
+          <div class="opts" id="colors">
+            {% for c in product.color_list %}
+            <button class="sw{% if forloop.first %} on{% endif %}" type="button"
+                    style="background:{{ c.hex }}" data-v="{{ c.name }}" aria-label="{{ c.name }}"></button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="buy">
+          <div class="qty">
+            <button type="button" data-step="-1">−</button>
+            <input id="q" name="qty" value="1" inputmode="numeric" aria-label="Кількість">
+            <button type="button" data-step="1">+</button>
+          </div>
+          {% if product.is_coming_soon or not product.is_available %}
+          <button class="add" type="button" disabled>Поки недоступно</button>
+          {% else %}
+          <button class="add" type="submit">Додати в кошик · {{ product.price|uah }}</button>
+          {% endif %}
+        </div>
+      </form>
+
+      <div class="trust">
+        <div><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z" stroke="#A4604D" stroke-width="1.8"/></svg>Зв'язано вручну</div>
+        <div><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z" stroke="#A4604D" stroke-width="1.8"/></svg>Безпечно для немовлят</div>
+        <div><svg viewBox="0 0 24 24" fill="none"><path d="M3 7h13v8H3zM16 10h3l2 2v3h-5z" stroke="#A4604D" stroke-width="1.8"/></svg>Нова Пошта по Україні</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- секції -->
+  <div class="sections">
+    {% if product.description %}<details open><summary>Опис</summary><div class="body">{{ product.description }}</div></details>{% endif %}
+    <details><summary>Матеріали й догляд</summary><div class="body">Натуральна бавовняна пряжа, наповнення — гіпоалергенний холлофайбер. Ручне прання при 30°, без віджиму, сушити в розправленому вигляді. Не використовуйте відбілювач.</div></details>
+    <details><summary>Доставка й оплата</summary><div class="body">Відправка протягом 1–2 днів. Нова Пошта по Україні, оплата при отриманні або онлайн (картка/Apple Pay/Google Pay). Виготовлення на замовлення — до 5 днів.</div></details>
+  </div>
+
+  <!-- схожі -->
+  {% if related %}
+  <section class="rel">
+    <h2>Схожі товари</h2>
+    <div class="rgrid">
+      {% for p in related %}
+      <a class="rcard" href="{{ p.get_absolute_url }}">
+        <div class="rph">{% product_media p %}</div>
+        <div class="rinfo"><div class="nm">{{ p.name }}</div><div class="pr">{% if p.is_coming_soon %}очікується{% else %}{{ p.price|uah }}{% endif %}</div></div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

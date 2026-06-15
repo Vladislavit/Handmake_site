@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Дякуємо за замовлення — Клубок{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="done">
+    <div class="ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="#5C6A45" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h2>Дякуємо за замовлення!</h2>
+    <p>Замовлення <strong>№{{ order.id|stringformat:"05d" }}</strong> прийнято. Ми зв'яжемося з вами для підтвердження.</p>
+    {% if order.email %}<p>Лист із деталями надіслано на вашу пошту.</p>{% endif %}
+    <a href="{% url 'shop:home' %}">На головну</a>
+  </div>
+</div>
+{% endblock %}

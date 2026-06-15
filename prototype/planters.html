@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кашпо — Клубок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EF;--paper-2:#F4ECDD;--ink:#3A2F2A;--ink-soft:#7A6B60;
+    --clay:#C5806C;--clay-bg:#F3E4DB;--clay-deep:#A4604D;
+    --sage:#7C8A63;--sage-bg:#E8ECDC;--sage-deep:#5C6A45;
+    --line:#E2D7C5;--radius:22px;--maxw:1120px;
+    /* на цій сторінці акцент — зелений */
+    --accent:var(--sage);--accent-bg:var(--sage-bg);--accent-deep:var(--sage-deep);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Mulish",system-ui,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.1;margin:0}
+  a{color:inherit}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  header{position:sticky;top:0;z-index:20;background:rgba(251,247,239,.82);backdrop-filter:blur(8px);border-bottom:1px dashed var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{font-family:"Fraunces",serif;font-size:26px;font-weight:600;display:flex;align-items:center;gap:10px;text-decoration:none}
+  .brand svg{width:30px;height:30px}
+  .nav-links{display:flex;gap:30px;font-weight:600;font-size:15px}
+  .nav-links a{text-decoration:none;color:var(--ink-soft);transition:.2s}.nav-links a:hover{color:var(--ink)}
+  .cart{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:2px dashed var(--accent);border-radius:999px;color:var(--accent-deep);font-weight:700;text-decoration:none;transition:.2s}.cart:hover{background:var(--accent-bg)}
+  .crumb{font-size:14px;color:var(--ink-soft);padding:26px 0 0}
+  .crumb a{text-decoration:none}.crumb a:hover{color:var(--ink)}
+  .cat-head{padding:14px 0 26px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  .cat-head h1{font-size:clamp(34px,5vw,52px)}
+  .cat-head p{margin:10px 0 0;color:var(--ink-soft);max-width:46ch}
+  .count{font-size:14px;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:24px;border-bottom:1px dashed var(--line)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font-size:14px;font-weight:600;padding:7px 15px;border-radius:999px;border:1.6px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;transition:.2s}
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-deep)}
+  .sort{font-size:14px;font-weight:600;color:var(--ink-soft);border:1.6px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:30px 0 18px}
+  .prod{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;transition:transform .28s,box-shadow .28s,border-color .28s;position:relative}
+  .prod:hover{transform:translateY(-6px);box-shadow:0 20px 36px -24px rgba(58,47,42,.45);border-color:transparent}
+  .ph{aspect-ratio:1/1;background:var(--accent-bg);display:grid;place-items:center;position:relative}
+  .ph svg{width:62%;height:62%}
+  .badge{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#fff;color:var(--accent-deep);padding:4px 10px;border-radius:999px}
+  .quick{position:absolute;bottom:10px;left:10px;right:10px;background:var(--accent-deep);color:#fff;border:none;border-radius:12px;padding:11px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;opacity:0;transform:translateY(8px);transition:.25s}
+  .prod:hover .quick{opacity:1;transform:none}
+  .pinfo{padding:16px 16px 18px}
+  .pname{font-family:"Fraunces",serif;font-size:20px}
+  .pmeta{font-size:13px;color:var(--ink-soft);margin:2px 0 10px}
+  .price{font-weight:700;font-size:17px}
+  .price s{color:var(--ink-soft);font-weight:500;margin-left:8px;font-size:14px}
+  .pager{display:flex;justify-content:center;padding:30px 0 70px}
+  .more{font-family:inherit;font-weight:700;font-size:15px;padding:13px 30px;border-radius:999px;border:2px dashed var(--accent);background:transparent;color:var(--accent-deep);cursor:pointer;transition:.2s}.more:hover{background:var(--accent-bg)}
+  footer{background:var(--paper-2);border-top:1px dashed var(--line);padding:40px 0}
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;color:var(--ink-soft);font-size:14px}
+  .foot a{color:var(--ink-soft);text-decoration:none}.foot a:hover{color:var(--ink)}
+  @media(max-width:900px){.nav-links{display:none}.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:480px){.grid{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="index.html"><svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#F3E4DB" stroke="#C5806C" stroke-width="2"/><path d="M7 13c4 3 9 4 13 1M5 18c5 3 12 4 18-1M9 8c3 4 6 7 13 8" stroke="#A4604D" stroke-width="1.6" stroke-linecap="round"/></svg>Клубок</a>
+  <div class="nav-links"><a href="category.html">Іграшки</a><a href="planters.html">Кашпо</a><a href="index.html#cats">Категорії</a><a href="index.html#story">Про нас</a></div>
+  <a class="cart" href="cart.html">Кошик · 2</a>
+</nav></div></header>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">Головна</a> · <a href="index.html#worlds">Для дому</a> · Кашпо</div>
+  <div class="cat-head">
+    <div>
+      <span class="eyebrow">Для вашого дому</span>
+      <h1>Кашпо</h1>
+      <p>Підвісні макраме, плетені кошики й кашпо на ланцюжку — ручне плетіння з натуральної бавовни та джуту для ваших рослин.</p>
+    </div>
+    <span class="count">9 товарів</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="filters">
+      <button class="chip on">Усі</button>
+      <button class="chip">Підвісні</button>
+      <button class="chip">Плетені</button>
+      <button class="chip">На ланцюжку</button>
+      <button class="chip">Великі</button>
+    </div>
+    <select class="sort" aria-label="Сортувати">
+      <option>Спочатку популярні</option>
+      <option>Спочатку дешевші</option>
+      <option>Спочатку дорожчі</option>
+      <option>Новинки</option>
+    </select>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="pager"><button class="more">Показати ще</button></div>
+</div>
+
+<footer><div class="wrap"><div class="foot">
+  <span>© 2026 Клубок · Зроблено в Україні</span>
+  <span><a href="index.html">Головна</a> · <a href="category.html">Іграшки</a> · <a href="cart.html">Кошик</a></span>
+</div></div></footer>
+
+<script>
+  const C="#5C6A45";
+  // три типи кашпо
+  const hanging=`<svg viewBox="0 0 120 120" fill="none"><path d="M60 6v12" stroke="${C}" stroke-width="2.4" stroke-linecap="round"/><circle cx="60" cy="20" r="3" stroke="${C}" stroke-width="2"/><path d="M60 23c-16 6-22 18-22 30M60 23c16 6 22 18 22 30M60 23c-7 8-7 24 0 30M60 23c7 8 7 24 0 30" stroke="${C}" stroke-width="2" stroke-dasharray="2 5"/><path d="M40 56h40l-5 34a7 7 0 0 1-7 6H52a7 7 0 0 1-7-6l-5-34Z" fill="#fff" stroke="${C}" stroke-width="2.6"/><path d="M60 56c-7-16-2-30 0-34 2 4 7 18 0 34Z" fill="#7C8A63"/><path d="M60 52c-12-7-19-2-22 0 7 5 17 5 22 0ZM60 52c12-7 19-2 22 0-7 5-17 5-22 0Z" fill="#7C8A63"/></svg>`;
+  const woven=`<svg viewBox="0 0 120 120" fill="none"><path d="M34 44h52l-6 44a8 8 0 0 1-8 7H48a8 8 0 0 1-8-7l-6-44Z" fill="#fff" stroke="${C}" stroke-width="2.6"/><path d="M37 56h46M39 70h42M41 84h38" stroke="${C}" stroke-width="1.8"/><path d="M60 44c-8-18-2-30 0-34 2 4 8 16 0 34Z" fill="#7C8A63"/><path d="M60 40c-13-7-20-2-23 0 7 5 18 5 23 0ZM60 40c13-7 20-2 23 0-7 5-18 5-23 0Z" fill="#7C8A63"/></svg>`;
+  const chain=`<svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="10" r="4" stroke="${C}" stroke-width="2"/><circle cx="60" cy="20" r="4" stroke="${C}" stroke-width="2"/><circle cx="60" cy="30" r="4" stroke="${C}" stroke-width="2"/><path d="M40 44h40l-5 34a7 7 0 0 1-7 6H52a7 7 0 0 1-7-6l-5-34Z" fill="#fff" stroke="${C}" stroke-width="2.6"/><path d="M40 44c8 4 32 4 40 0" stroke="${C}" stroke-width="2"/><path d="M60 44c-7-16-2-28 0-32 2 4 7 16 0 32Z" fill="#7C8A63"/></svg>`;
+
+  const products=[
+    {n:"Кашпо «Вузлик»",m:"підвісне · 90 см",p:380,badge:"Хіт",art:hanging},
+    {n:"Кашпо «Гойдалка»",m:"підвісне · 120 см",p:460,art:hanging},
+    {n:"Кошик «Затишок»",m:"плетене · Ø22 см",p:320,art:woven},
+    {n:"Кашпо «Ланка»",m:"на ланцюжку · 60 см",p:420,badge:"Новинка",art:chain},
+    {n:"Кошик «Джут»",m:"плетене · Ø28 см",p:390,art:woven},
+    {n:"Кашпо «Подвійне»",m:"підвісне · 2 рівні",p:640,badge:"Великий",art:hanging},
+    {n:"Кашпо «Балкон»",m:"на ланцюжку · 75 см",p:480,art:chain},
+    {n:"Кошик «Міні»",m:"плетене · Ø14 см",p:240,p_old:290,art:woven},
+    {n:"Кашпо «Хмаринка»",m:"підвісне · біле",p:0,soon:true,art:hanging},
+  ];
+
+  const grid=document.getElementById('grid');
+  products.forEach(x=>{
+    const a=document.createElement('a');a.href="product.html";a.className="prod";
+    a.innerHTML=`<div class="ph">${x.badge?`<span class="badge">${x.badge}</span>`:''}${x.art}
+      <button class="quick" type="button" onclick="event.preventDefault();this.textContent='Додано ✓'">${x.soon?'Незабаром':'Швидко в кошик'}</button></div>
+      <div class="pinfo"><div class="pname">${x.n}</div><div class="pmeta">${x.m}</div>
+      <div class="price">${x.soon?'<span style="color:var(--ink-soft)">очікується</span>':x.p+' ₴'}${x.p_old?` <s>${x.p_old} ₴</s>`:''}</div></div>`;
+    grid.appendChild(a);
+  });
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(o=>o.classList.remove('on'));c.classList.add('on');});
+</script>
+</body>
+</html>
