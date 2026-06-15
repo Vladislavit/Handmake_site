@@ -217,8 +217,31 @@ h1.title{font-size:clamp(34px,5vw,52px);padding:6px 0 28px}
 .iph svg{width:64%;height:64%}
 .imeta .nm{font-family:"Fraunces",serif;font-size:21px}
 .imeta .op{font-size:14px;color:var(--ink-soft);margin-top:2px}
-.imeta .rm{margin-top:8px;background:none;border:none;color:var(--ink-soft);font-family:inherit;font-size:13px;cursor:pointer;padding:0;text-decoration:underline dotted}
-.imeta .rm:hover{color:var(--accent-deep)}
+.imeta .rm{margin-top:12px;display:inline-flex;align-items:center;gap:7px;background:#FBEFEC;border:1.4px solid #EBC9C1;color:#C0584B;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:7px 14px;border-radius:11px;transition:.2s}
+.imeta .rm svg{width:15px;height:15px;flex:none}
+.imeta .rm:hover{background:#C0584B;border-color:#C0584B;color:#fff}
+.rm-form{display:inline}
+
+/* ---------- модальне вікно (підтвердження) ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+  background:rgba(58,47,42,.45);backdrop-filter:blur(3px);padding:20px}
+.modal[hidden]{display:none}
+.modal-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:32px 28px;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 30px 60px -20px rgba(58,47,42,.5);animation:modal-pop .2s ease}
+@keyframes modal-pop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.modal-ic{width:62px;height:62px;border-radius:50%;background:var(--clay-bg);color:var(--clay-deep);
+  display:grid;place-items:center;margin:0 auto 16px}
+.modal-ic svg{width:28px;height:28px}
+.modal-card h3{font-size:24px;margin-bottom:8px}
+.modal-card p{color:var(--ink-soft);margin:0 0 24px}
+.modal-actions{display:flex;gap:12px}
+.modal-actions button{flex:1;font-family:inherit;font-weight:700;font-size:15px;padding:13px;
+  border-radius:14px;cursor:pointer;transition:.2s}
+.btn-ghost{background:#fff;border:1.6px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink-soft)}
+.btn-danger{background:var(--clay-deep);border:none;color:#fff}
+.btn-danger:hover{filter:brightness(1.06)}
 .iright{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
 .iright .qty button{width:36px;height:36px}
 .iright .qty span{width:34px;text-align:center;font-weight:700}

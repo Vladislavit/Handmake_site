@@ -23,6 +23,39 @@
     });
   }
 
+  /* ---- Кошик: підтвердження видалення товару ---- */
+  var removeModal = document.getElementById('removeModal');
+  if (removeModal) {
+    var pendingForm = null;
+    var removeText = document.getElementById('removeText');
+    var closeRemove = function () { removeModal.hidden = true; pendingForm = null; };
+
+    document.querySelectorAll('[data-confirm-remove]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();   // без JS кнопка-submit видаляє одразу; з JS — спершу підтвердження
+        pendingForm = btn.closest('form');
+        if (btn.dataset.name) {
+          removeText.textContent = 'Прибрати «' + btn.dataset.name + '» з кошика?';
+        }
+        removeModal.hidden = false;
+      });
+    });
+
+    var confirmBtn = document.getElementById('removeConfirm');
+    if (confirmBtn) confirmBtn.addEventListener('click', function () {
+      if (pendingForm) pendingForm.submit();
+    });
+    removeModal.querySelectorAll('[data-modal-cancel]').forEach(function (x) {
+      x.addEventListener('click', closeRemove);
+    });
+    removeModal.addEventListener('click', function (e) {
+      if (e.target === removeModal) closeRemove();   // клік по тлу
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !removeModal.hidden) closeRemove();
+    });
+  }
+
   /* ---- Сторінка товару ---- */
   var pf = document.getElementById('product-form');
   if (pf) {
