@@ -57,11 +57,18 @@ nav{display:flex;align-items:center;justify-content:space-between;height:74px}
 .nav-links a:hover{color:var(--ink)}
 .cart{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:2px dashed var(--accent);border-radius:999px;color:var(--accent-deep);font-weight:700;text-decoration:none;transition:.2s;white-space:nowrap}
 .cart:hover{background:var(--accent-bg)}
-.nav-search{display:flex;align-items:center;gap:8px;border:1.6px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;min-width:0;max-width:220px;transition:border-color .2s}
-.nav-search:focus-within{border-color:var(--accent)}
-.nav-search svg{width:16px;height:16px;color:var(--ink-soft);flex:none}
-.nav-search input{border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);width:100%;min-width:0;outline:none}
+.nav-search{display:flex;align-items:center;gap:9px;height:44px;width:220px;min-width:0;
+  border:1.6px solid var(--line);background:var(--paper-2);border-radius:999px;padding:0 18px;
+  color:var(--ink-soft);transition:width .25s ease, border-color .2s, background .2s, box-shadow .2s}
+.nav-search:hover{border-color:var(--accent)}
+.nav-search:focus-within{width:270px;border-color:var(--accent);background:#fff;
+  box-shadow:0 0 0 4px var(--accent-bg)}
+.nav-search svg{width:18px;height:18px;flex:none;transition:color .2s}
+.nav-search:focus-within svg{color:var(--accent-deep)}
+.nav-search input{border:none;background:transparent;font-family:inherit;font-size:15px;
+  color:var(--ink);width:100%;min-width:0;outline:none;padding:0}
 .nav-search input::placeholder{color:var(--ink-soft)}
+.nav-search input::-webkit-search-cancel-button{-webkit-appearance:none}
 
 /* ---------- messages ---------- */
 .messages{list-style:none;margin:16px auto 0;padding:0;max-width:var(--maxw)}
@@ -308,7 +315,7 @@ footer{background:var(--paper-2);border-top:1px dashed var(--line);padding:48px 
 /* ---------- responsive ---------- */
 @media (max-width:900px){
   .nav-links{display:none}
-  .nav-search{max-width:160px}
+  .nav-search,.nav-search:focus-within{width:160px}
   .grid,.rgrid{grid-template-columns:repeat(2,1fr)}
   .pd{grid-template-columns:1fr;gap:30px}.gallery{position:static}
   .cart-grid,.co{grid-template-columns:1fr;gap:24px}.summary{position:static}
