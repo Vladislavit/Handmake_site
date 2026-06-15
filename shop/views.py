@@ -233,6 +233,7 @@ def cart_remove(request, key):
 
 # --------------------------- Оформлення ---------------------------
 
+@ratelimit(key='ip', rate='8/h', method='POST', block=True)
 def checkout(request):
     cart = Cart(request)
     if not len(cart):
