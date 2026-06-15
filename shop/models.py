@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
+from .utils import unique_slugify
+
 
 class Category(models.Model):
     """Розділ каталогу. `kind` визначає «світ» і акцентний колір теми."""
@@ -14,7 +16,8 @@ class Category(models.Model):
     ]
 
     name = models.CharField('Назва', max_length=120)
-    slug = models.SlugField('Slug', max_length=140, unique=True)
+    slug = models.SlugField('Slug', max_length=140, unique=True, blank=True,
+                            help_text='Залиште порожнім — згенерується з назви (латиницею).')
     kind = models.CharField('Світ', max_length=10, choices=KIND_CHOICES, default=KIND_TOY)
     eyebrow = models.CharField('Надзаголовок', max_length=80, blank=True)
     description = models.TextField('Опис', blank=True)
@@ -28,6 +31,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, self.name)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('shop:category', args=[self.slug])
@@ -62,7 +70,8 @@ class Product(models.Model):
         Category, on_delete=models.CASCADE, related_name='products', verbose_name='Категорія'
     )
     name = models.CharField('Назва', max_length=140)
-    slug = models.SlugField('Slug', max_length=160, unique=True)
+    slug = models.SlugField('Slug', max_length=160, unique=True, blank=True,
+                            help_text='Залиште порожнім — згенерується з назви (латиницею).')
     meta = models.CharField('Короткий опис', max_length=120, blank=True,
                             help_text='Напр.: «26 см · вершковий»')
     description = models.TextField('Опис', blank=True)
@@ -96,6 +105,11 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, self.name)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('shop:product', args=[self.slug])

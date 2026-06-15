@@ -14,7 +14,6 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = ('kind', 'is_visible')
     list_editable = ('order', 'is_visible')
     search_fields = ('name',)
-    prepopulated_fields = {'slug': ('name',)}
 
 
 def _img_tag(url, height=60):
@@ -79,7 +78,6 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'category__kind', 'is_available', 'is_coming_soon', 'badge')
     list_editable = ('price', 'is_available')
     search_fields = ('name', 'meta', 'description')
-    prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline]
     fieldsets = (
         (None, {
