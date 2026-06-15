@@ -15,11 +15,18 @@ logger = logging.getLogger(__name__)
 
 PRODUCT_FOLDER = 'klubok/products'
 
-# Повна обробка: прибрати фон -> тінь -> біле тло -> квадратна обрізка -> оптимізація
+# Повна обробка (по кроках):
+#   1) прибрати фон (об'єкт на прозорому);
+#   2) trim — обрізати прозорі поля до меж об'єкта (поки фон прозорий!);
+#   3) тінь;
+#   4) fit — вписати об'єкт зі збереженням пропорцій (з полями);
+#   5) pad до квадрата з білим тлом -> об'єкт автоматично по центру;
+#   6) оптимізація якості/формату.
 PRODUCT_TRANSFORMATION = [
     {'effect': 'background_removal'},
+    {'effect': 'trim'},
     {'effect': 'shadow'},
-    {'background': 'white'},
+    {'width': 880, 'height': 880, 'crop': 'fit'},
     {'width': 1000, 'height': 1000, 'crop': 'pad', 'background': 'white'},
     {'quality': 'auto', 'fetch_format': 'auto'},
 ]
