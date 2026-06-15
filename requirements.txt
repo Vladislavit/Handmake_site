@@ -4,3 +4,5 @@ psycopg[binary]
 dj-database-url
 python-dotenv
 cloudinary
+django-axes
+django-ratelimit

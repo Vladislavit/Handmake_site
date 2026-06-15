@@ -38,6 +38,8 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
+# У проді додайте домен: DJANGO_ALLOWED_HOSTS=klubok.ua,www.klubok.ua
+ALLOWED_HOSTS += [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h.strip()]
 
 
 # Application definition
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'axes',          # блокування перебору пароля
     'shop',
 ]
 
@@ -60,6 +63,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',   # має бути останнім
+]
+
+# django-axes: спершу перевіряє блокування, потім звичайна автентифікація
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = 'klubok.urls'
@@ -186,3 +196,27 @@ cloudinary.config(
     api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
     secure=True,
 )
+
+# --- django-axes: захист від перебору пароля ---
+AXES_FAILURE_LIMIT = 5             # дозволених невдалих спроб
+AXES_COOLOFF_TIME = 1              # блокування на 1 годину
+AXES_RESET_ON_SUCCESS = True       # лічильник скидається після успішного входу
+AXES_LOCKOUT_PARAMETERS = ['ip_address']   # блокуємо за IP
+AXES_LOCKOUT_TEMPLATE = None       # повертає стандартну 429-відповідь
+
+# Адреса адмінки. У проді задайте свою неочевидну: DJANGO_ADMIN_URL=secret-panel/
+ADMIN_URL = os.environ.get('DJANGO_ADMIN_URL', 'admin/')
+
+# --- Безпека для продакшену (активна лише коли DEBUG=False) ---
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True                               # http -> https
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # за reverse-proxy (Render тощо)
+    SESSION_COOKIE_SECURE = True                            # cookies лише через https
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000                          # рік
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True                      # проти MIME-sniffing
+    X_FRAME_OPTIONS = 'DENY'                                # проти clickjacking
+    # Дозволені джерела для CSRF (ваш домен): CSRF_TRUSTED_ORIGINS=https://klubok.ua
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
