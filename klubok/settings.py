@@ -162,7 +162,8 @@ NOVA_POSHTA_API_URL = 'https://api.novaposhta.ua/v2.0/json/'
 # Пошта. Якщо задано EMAIL_HOST_USER + EMAIL_HOST_PASSWORD (Gmail App Password) —
 # листи йдуть через SMTP Gmail; інакше друкуються в консоль (зручно для розробки).
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+# App Password Google показує з пробілами — прибираємо їх (інакше SMTP-логін не пройде)
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '').replace(' ', '')
 if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
