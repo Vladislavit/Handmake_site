@@ -201,6 +201,16 @@ class Order(models.Model):
     def __str__(self):
         return f'Замовлення №{self.pk}'
 
+    def delivery_label(self):
+        """Зрозумілий підпис доставки: відділення це чи поштомат."""
+        if self.delivery == 'pickup':
+            return 'Самовивіз'
+        if self.delivery == 'np-courier':
+            return 'Нова Пошта — кур\'єр'
+        if 'поштомат' in (self.branch or '').lower():
+            return 'Нова Пошта — поштомат'
+        return 'Нова Пошта — відділення'
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items',

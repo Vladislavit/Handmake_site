@@ -1,11 +1,11 @@
-Дякуємо за замовлення в «Клубок»!
+{% autoescape off %}Дякуємо за замовлення в «Клубок»!
 
 Замовлення №{{ order.id|stringformat:"05d" }} прийнято. Найближчим часом ми звʼяжемося з вами для підтвердження.
 
 Склад замовлення:
 {% for it in items %}— {{ it.name }}{% if it.options %} ({{ it.options }}){% endif %} × {{ it.qty }} — {{ it.cost }} ₴
 {% endfor %}
-Доставка: {{ order.get_delivery_display }}{% if order.shipping %} — {{ order.shipping }} ₴{% else %} — безкоштовно{% endif %}
+Доставка: {{ order.delivery_label }}{% if order.shipping %} — {{ order.shipping }} ₴{% else %} — безкоштовно{% endif %}
 {% if order.delivery == 'pickup' %}Самовивіз (Одеса, за домовленістю){% elif order.delivery == 'np-courier' %}{{ order.city }}, {{ order.address }}{% else %}{{ order.city }}, {{ order.branch }}{% endif %}
 
 Оплата: {{ order.get_payment_display }}
@@ -13,3 +13,4 @@
 
 Дякуємо, що обираєте рукотворне 🧶
 Клубок
+{% endautoescape %}

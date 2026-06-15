@@ -1,10 +1,10 @@
-Нове замовлення №{{ order.id|stringformat:"05d" }}
+{% autoescape off %}Нове замовлення №{{ order.id|stringformat:"05d" }}
 
 Клієнт: {{ order.full_name }}
 Телефон: {{ order.phone }}
 Email: {{ order.email|default:"—" }}
 
-Доставка: {{ order.get_delivery_display }}
+Доставка: {{ order.delivery_label }}
 {% if order.delivery == 'pickup' %}Самовивіз{% elif order.delivery == 'np-courier' %}{{ order.city }}, {{ order.address }}{% else %}{{ order.city }}, {{ order.branch }}{% endif %}
 Оплата: {{ order.get_payment_display }}
 
@@ -17,3 +17,4 @@ Email: {{ order.email|default:"—" }}
 Коментар: {{ order.comment }}
 {% endif %}
 Переглянути в адмінці: /admin/shop/order/{{ order.id }}/change/
+{% endautoescape %}
