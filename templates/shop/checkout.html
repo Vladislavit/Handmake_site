@@ -17,6 +17,7 @@
 
   <form method="post" action="{% url 'shop:checkout' %}">
     {% csrf_token %}
+    <div class="hp" aria-hidden="true">{{ form.website }}</div>
     <div class="co">
       <div class="form-col">
         <!-- 1. контакти -->
