@@ -17,11 +17,22 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+def _img_tag(url, height=60):
+    """Клікабельне прев'ю (відкриває повне фото в новій вкладці)."""
+    return format_html(
+        '<a href="{0}" target="_blank" rel="noopener">'
+        '<img src="{0}" style="height:{1}px;border-radius:10px;'
+        'border:1px solid #e2d7c5;background:#fff"></a>',
+        url, height,
+    )
+
+
 class ProductImageForm(forms.ModelForm):
     """Дозволяє завантажити файл — він піде в Cloudinary, а в БД ляже secure_url."""
     upload = forms.ImageField(
-        required=False, label='Завантажити фото',
-        help_text='Оброблятиметься в Cloudinary (видалення фону, тінь, біле тло, оптимізація).',
+        required=False, label='Завантажити / замінити фото',
+        help_text='Оброблятиметься в Cloudinary (видалення фону, тінь, біле тло, оптимізація). '
+                  'Залиште порожнім — поточне фото лишиться без змін.',
     )
 
     class Meta:
@@ -44,18 +55,18 @@ class ProductImageForm(forms.ModelForm):
         return cleaned
 
 
-class ProductImageInline(admin.TabularInline):
+class ProductImageInline(admin.StackedInline):
     model = ProductImage
     form = ProductImageForm
     extra = 1
-    fields = ('upload', 'preview', 'image_url', 'alt', 'is_main', 'order')
+    fields = ('preview', 'upload', 'image_url', 'alt', 'is_main', 'order')
     readonly_fields = ('preview',)
 
     def preview(self, obj):
         if obj and obj.image_url:
-            return format_html('<img src="{}" style="height:60px;border-radius:8px">', obj.image_url)
-        return '—'
-    preview.short_description = 'Перегляд'
+            return _img_tag(obj.image_url, height=160)
+        return format_html('<span style="color:#7A6B60">Фото ще немає — завантажте файл нижче.</span>')
+    preview.short_description = 'Поточне фото'
 
 
 @admin.register(Product)
@@ -114,6 +125,36 @@ class OrderAdmin(admin.ModelAdmin):
         ('Оплата та коментар', {'fields': ('payment', 'comment')}),
         ('Підсумки', {'fields': ('shipping', 'total', 'status', 'created')}),
     )
+
+
+class ProductImageAdminForm(ProductImageForm):
+    """Та сама логіка завантаження, але з вибором товару (для окремого розділу)."""
+    class Meta(ProductImageForm.Meta):
+        fields = ('product', 'upload', 'image_url', 'alt', 'is_main', 'order')
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    form = ProductImageAdminForm
+    list_display = ('thumb', 'product', 'alt', 'is_main', 'order')
+    list_display_links = ('thumb', 'product')
+    list_filter = ('is_main', 'product__category')
+    search_fields = ('product__name', 'alt')
+    list_select_related = ('product',)
+    readonly_fields = ('preview',)
+    fields = ('product', 'preview', 'upload', 'image_url', 'alt', 'is_main', 'order')
+
+    def thumb(self, obj):
+        if obj.image_url:
+            return _img_tag(obj.image_url, height=54)
+        return '—'
+    thumb.short_description = 'Фото'
+
+    def preview(self, obj):
+        if obj and obj.image_url:
+            return _img_tag(obj.image_url, height=200)
+        return format_html('<span style="color:#7A6B60">Фото ще немає — завантажте файл нижче.</span>')
+    preview.short_description = 'Поточне фото'
 
 
 @admin.register(NPCity)
