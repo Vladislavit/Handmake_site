@@ -3,3 +3,4 @@ Pillow
 psycopg[binary]
 dj-database-url
 python-dotenv
+cloudinary

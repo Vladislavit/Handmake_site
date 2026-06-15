@@ -175,3 +175,13 @@ EMAIL_TIMEOUT = 15
 # Від кого листи й куди слати сповіщення про нові замовлення
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Клубок <handmakesite@gmail.com>')
 ORDER_NOTIFY_EMAIL = os.environ.get('ORDER_NOTIFY_EMAIL', 'handmakesite@gmail.com')
+
+# Cloudinary — зберігання й обробка фото товарів (фото НЕ зберігаються локально).
+import cloudinary  # noqa: E402
+
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
+    secure=True,
+)

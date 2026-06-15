@@ -63,11 +63,11 @@ def _placeholder_svg(product):
 
 @register.simple_tag
 def product_media(product):
-    """Фото товару, або декоративна SVG-балванка, якщо фото ще немає."""
-    img = product.main_image
-    if img:
+    """Фото товару (Cloudinary), або декоративна SVG-балванка, якщо фото ще немає."""
+    url = product.main_image_url
+    if url:
         alt = escape(product.name)
-        return mark_safe(f'<img class="media-photo" src="{img.url}" alt="{alt}" loading="lazy">')
+        return mark_safe(f'<img class="media-photo" src="{escape(url)}" alt="{alt}" loading="lazy">')
     return mark_safe(_placeholder_svg(product))
 
 

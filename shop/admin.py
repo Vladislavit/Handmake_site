@@ -1,6 +1,8 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
+from .cloudinary_service import CloudinaryUploadError, upload_product_image
 from .models import (
     Category, NPCity, NPWarehouse, Order, OrderItem, Product, ProductImage,
 )
@@ -15,15 +17,43 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+class ProductImageForm(forms.ModelForm):
+    """Дозволяє завантажити файл — він піде в Cloudinary, а в БД ляже secure_url."""
+    upload = forms.ImageField(
+        required=False, label='Завантажити фото',
+        help_text='Оброблятиметься в Cloudinary (видалення фону, тінь, біле тло, оптимізація).',
+    )
+
+    class Meta:
+        model = ProductImage
+        fields = ('upload', 'image_url', 'alt', 'is_main', 'order')
+
+    def clean(self):
+        cleaned = super().clean()
+        upload = cleaned.get('upload')
+        if upload:
+            try:
+                url = upload_product_image(upload)
+            except CloudinaryUploadError as exc:
+                self.add_error('upload', str(exc))
+            else:
+                cleaned['image_url'] = url
+                self.instance.image_url = url
+        elif self.has_changed() and not cleaned.get('image_url'):
+            self.add_error('upload', 'Додайте фото (файл) або вкажіть URL.')
+        return cleaned
+
+
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
+    form = ProductImageForm
     extra = 1
-    fields = ('image', 'preview', 'alt', 'is_main', 'order')
+    fields = ('upload', 'preview', 'image_url', 'alt', 'is_main', 'order')
     readonly_fields = ('preview',)
 
     def preview(self, obj):
-        if obj and obj.image:
-            return format_html('<img src="{}" style="height:60px;border-radius:8px">', obj.image.url)
+        if obj and obj.image_url:
+            return format_html('<img src="{}" style="height:60px;border-radius:8px">', obj.image_url)
         return '—'
     preview.short_description = 'Перегляд'
 

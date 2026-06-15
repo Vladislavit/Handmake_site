@@ -105,9 +105,9 @@ class Product(models.Model):
         return self.old_price and self.old_price > self.price
 
     @property
-    def main_image(self):
+    def main_image_url(self):
         img = self.images.filter(is_main=True).first() or self.images.first()
-        return img.image if img else None
+        return img.image_url if img else None
 
     def size_list(self):
         return [s.strip() for s in self.sizes.split(',') if s.strip()]
@@ -127,7 +127,8 @@ class Product(models.Model):
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images',
                                 verbose_name='Товар')
-    image = models.ImageField('Фото', upload_to='products/')
+    # secure_url від Cloudinary (фото обробляється і зберігається в хмарі, не локально)
+    image_url = models.URLField('URL фото (Cloudinary)', max_length=500, blank=True)
     alt = models.CharField('Опис (alt)', max_length=140, blank=True)
     is_main = models.BooleanField('Головне', default=False)
     order = models.PositiveIntegerField('Порядок', default=0)

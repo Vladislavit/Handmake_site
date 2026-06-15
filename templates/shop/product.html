@@ -18,8 +18,8 @@
       <div class="thumbs">
         {% for img in product.images.all %}
         <button class="thumb{% if forloop.first %} on{% endif %}" type="button"
-                data-media="<img class='media-photo' src='{{ img.image.url }}' alt=''>">
-          <img class="media-photo" src="{{ img.image.url }}" alt="{{ img.alt }}">
+                data-media="<img class='media-photo' src='{{ img.image_url }}' alt=''>">
+          <img class="media-photo" src="{{ img.image_url }}" alt="{{ img.alt }}">
         </button>
         {% endfor %}
       </div>
