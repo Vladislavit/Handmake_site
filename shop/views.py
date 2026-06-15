@@ -1,9 +1,13 @@
 from django.conf import settings
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import F, Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+
+PER_PAGE = 12
 
 from .cart import Cart
 from .emails import send_order_emails
@@ -47,11 +51,69 @@ def _sorted(qs, request):
     return qs.order_by(*SORTS.get(sort, SORTS['popular'])), sort
 
 
-def _filters_for_kind(kind):
-    # Декоративні чіпи-фільтри (як у прототипі)
-    if kind == Category.KIND_HOME:
-        return ['Усі', 'Підвісні', 'Плетені', 'На ланцюжку', 'Великі']
-    return ['Усі', 'Маленькі', 'Великі', 'Новинки', 'В наявності']
+# Робочі чіпи-фільтри для категорії/пошуку
+REFINE_OPTIONS = [
+    ('', 'Усі'),
+    ('available', 'В наявності'),
+    ('new', 'Новинки'),
+    ('sale', 'Зі знижкою'),
+]
+
+
+def _apply_refine(qs, f):
+    if f == 'available':
+        return qs.filter(is_available=True, is_coming_soon=False)
+    if f == 'new':
+        return qs.filter(badge='Новинка')
+    if f == 'sale':
+        return qs.filter(old_price__isnull=False, old_price__gt=F('price'))
+    return qs
+
+
+def _build_chips(request, param, options):
+    """Список чіпів-посилань; зберігає інші параметри (sort, q), скидає page."""
+    current = request.GET.get(param, '')
+    chips = []
+    for value, label in options:
+        params = request.GET.copy()
+        params.pop('page', None)
+        if value:
+            params[param] = value
+        else:
+            params.pop(param, None)
+        encoded = params.urlencode()
+        chips.append({
+            'label': label,
+            'href': request.path + ('?' + encoded if encoded else ''),
+            'active': current == value,
+        })
+    return chips
+
+
+def _listing_response(request, products, *, page_title, eyebrow, description,
+                      crumbs, theme_home, chips, search_q=''):
+    products = _apply_refine(products, request.GET.get('f', ''))
+    products, sort = _sorted(products, request)
+    paginator = Paginator(products, PER_PAGE)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    params = request.GET.copy()
+    params.pop('page', None)
+    encoded = params.urlencode()
+
+    return render(request, 'shop/listing.html', {
+        'page_title': page_title,
+        'eyebrow': eyebrow,
+        'description': description,
+        'crumbs': crumbs,
+        'page_obj': page_obj,
+        'count': paginator.count,
+        'sort': sort,
+        'theme_home': theme_home,
+        'chips': chips,
+        'search_q': search_q,
+        'qs_prefix': (encoded + '&') if encoded else '',
+    })
 
 
 def home(request):
@@ -66,36 +128,53 @@ def home(request):
 def world(request, kind):
     if kind not in WORLD_META:
         raise Http404()
-    products, sort = _sorted(Product.objects.filter(category__kind=kind), request)
     meta = WORLD_META[kind]
-    return render(request, 'shop/listing.html', {
-        'page_title': meta['title'],
-        'eyebrow': meta['eyebrow'],
-        'description': meta['description'],
-        'crumbs': [('Головна', '/'), (meta['title'], None)],
-        'products': products,
-        'count': products.count(),
-        'sort': sort,
-        'theme_home': kind == Category.KIND_HOME,
-        'filters': _filters_for_kind(kind),
-    })
+    cats = Category.objects.filter(kind=kind, is_visible=True)
+    products = Product.objects.filter(category__kind=kind)
+
+    cat_slug = request.GET.get('cat', '')
+    if cat_slug:
+        products = products.filter(category__slug=cat_slug)
+
+    chips = _build_chips(request, 'cat', [('', 'Усі')] + [(c.slug, c.name) for c in cats])
+    return _listing_response(
+        request, products,
+        page_title=meta['title'], eyebrow=meta['eyebrow'], description=meta['description'],
+        crumbs=[('Головна', '/'), (meta['title'], None)],
+        theme_home=(kind == Category.KIND_HOME), chips=chips,
+    )
 
 
 def category(request, slug):
     cat = get_object_or_404(Category, slug=slug, is_visible=True)
-    products, sort = _sorted(cat.products.all(), request)
     world_title = WORLD_META[cat.kind]['title']
-    return render(request, 'shop/listing.html', {
-        'page_title': cat.name,
-        'eyebrow': cat.eyebrow or WORLD_META[cat.kind]['eyebrow'],
-        'description': cat.description,
-        'crumbs': [('Головна', '/'), (world_title, f'/catalog/{cat.kind}/'), (cat.name, None)],
-        'products': products,
-        'count': products.count(),
-        'sort': sort,
-        'theme_home': cat.is_home,
-        'filters': _filters_for_kind(cat.kind),
-    })
+    chips = _build_chips(request, 'f', REFINE_OPTIONS)
+    return _listing_response(
+        request, cat.products.all(),
+        page_title=cat.name, eyebrow=cat.eyebrow or WORLD_META[cat.kind]['eyebrow'],
+        description=cat.description,
+        crumbs=[('Головна', '/'), (world_title, f'/catalog/{cat.kind}/'), (cat.name, None)],
+        theme_home=cat.is_home, chips=chips,
+    )
+
+
+def search(request):
+    q = request.GET.get('q', '').strip()
+    products = Product.objects.none()
+    if q:
+        products = Product.objects.filter(
+            Q(name__icontains=q) | Q(meta__icontains=q)
+            | Q(description__icontains=q) | Q(category__name__icontains=q)
+        ).distinct()
+    chips = _build_chips(request, 'f', REFINE_OPTIONS) if q else []
+    return _listing_response(
+        request, products,
+        page_title=f'Пошук: «{q}»' if q else 'Пошук',
+        eyebrow='Результати пошуку',
+        description='' if q else 'Введіть запит у полі пошуку вгорі.',
+        crumbs=[('Головна', '/'), ('Пошук', None)],
+        theme_home=False, chips=chips, search_q=q,
+    )
 
 
 def product(request, slug):

@@ -28,6 +28,10 @@
         <a href="{% url 'shop:home' %}#cats">Категорії</a>
         <a href="{% url 'shop:home' %}#story">Про нас</a>
       </div>
+      <form class="nav-search" action="{% url 'shop:search' %}" method="get" role="search">
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="m14 14 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="search" name="q" placeholder="Пошук…" value="{{ request.GET.q|default:'' }}" aria-label="Пошук товарів">
+      </form>
       <a class="cart" href="{% url 'shop:cart' %}">Кошик · {{ cart|length }}</a>
     </nav>
   </div>

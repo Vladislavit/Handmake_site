@@ -7,6 +7,7 @@ app_name = 'shop'
 urlpatterns = [
     path('', views.home, name='home'),
     path('catalog/<slug:kind>/', views.world, name='world'),
+    path('search/', views.search, name='search'),
     path('category/<slug:slug>/', views.category, name='category'),
     path('product/<slug:slug>/', views.product, name='product'),
 

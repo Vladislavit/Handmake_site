@@ -18,6 +18,7 @@
     sortSelect.addEventListener('change', function () {
       var url = new URL(window.location.href);
       url.searchParams.set('sort', sortSelect.value);
+      url.searchParams.delete('page'); // нове сортування -> з першої сторінки
       window.location.href = url.toString();
     });
   }

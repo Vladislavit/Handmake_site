@@ -21,7 +21,7 @@
 
   <div class="toolbar">
     <div class="filters">
-      {% for f in filters %}<button class="chip{% if forloop.first %} on{% endif %}" type="button">{{ f }}</button>{% endfor %}
+      {% for chip in chips %}<a class="chip{% if chip.active %} on{% endif %}" href="{{ chip.href }}">{{ chip.label }}</a>{% endfor %}
     </div>
     <select class="sort" data-autosubmit aria-label="Сортувати">
       <option value="popular" {% if sort == 'popular' %}selected{% endif %}>Спочатку популярні</option>
@@ -32,7 +32,7 @@
   </div>
 
   <div class="grid">
-    {% for p in products %}
+    {% for p in page_obj %}
     <div class="prod">
       <div class="ph">
         {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
@@ -57,8 +57,16 @@
       </a>
     </div>
     {% empty %}
-    <p class="empty-grid">Тут поки немає товарів. Зазирніть трохи згодом 🧶</p>
+    <p class="empty-grid">{% if search_q %}За запитом «{{ search_q }}» нічого не знайдено.{% else %}Тут поки немає товарів. Зазирніть трохи згодом 🧶{% endif %}</p>
     {% endfor %}
   </div>
+
+  {% if page_obj.has_other_pages %}
+  <div class="pager">
+    {% if page_obj.has_previous %}<a class="more" href="?{{ qs_prefix }}page={{ page_obj.previous_page_number }}">← Назад</a>{% endif %}
+    <span class="page-info">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a class="more" href="?{{ qs_prefix }}page={{ page_obj.next_page_number }}">Далі →</a>{% endif %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
